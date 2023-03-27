@@ -4,19 +4,19 @@
 #include "GFTPaddle.h"
 
 #include "EnhancedInputComponent.h"
-#include "EnhancedInputSubsystems.h"
 #include "InputMappingContext.h"
 #include "Camera/CameraComponent.h"
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SplineComponent.h"
+#include "GFT_Spring23/Input/GFTInputConfig.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AGFTPaddle::AGFTPaddle()
 {
 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 
 	SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	RootComponent = SceneRoot;
@@ -44,44 +44,20 @@ AGFTPaddle::AGFTPaddle()
 	Camera->SetupAttachment(RootComponent);
 }
 
-void AGFTPaddle::PossessedBy(AController* NewController)
+UGFTInputConfig* AGFTPaddle::GetInputConfig() const
 {
-	Super::PossessedBy(NewController);
-
-	if (const APlayerController* PlayerController = Cast<APlayerController>(NewController))
+	if (InputConfig.IsNull())
 	{
-		SetupMappingContext(PlayerController);
-	}
-}
-
-// Called when the game starts or when spawned
-void AGFTPaddle::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-// Called every frame
-void AGFTPaddle::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
-// Called to bind functionality to input
-void AGFTPaddle::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(PlayerInputComponent);
-	if (Input == nullptr || InputActionMove.IsNull())
-	{
-		return;
+		return nullptr;
 	}
 
-	Input->BindAction(InputActionMove.LoadSynchronous(), ETriggerEvent::Triggered, this, &AGFTPaddle::MovePaddle);
+	return InputConfig.LoadSynchronous();
 }
 
 void AGFTPaddle::MovePaddle(const FInputActionInstance& Instance)
 {
 	const float InputValue = Instance.GetValue().Get<float>();
-	PositionOnSpline += InputValue / 100;
+	PositionOnSpline += InputValue / MovementSensitivity;
 	PositionOnSpline = FMath::Clamp(PositionOnSpline, 0.f, 1.f);
 
 	float DistanceOnSpline = PositionOnSpline * Spline->GetSplineLength();
@@ -89,16 +65,7 @@ void AGFTPaddle::MovePaddle(const FInputActionInstance& Instance)
 	PaddleAnchor->SetWorldTransform(Transform);
 }
 
-void AGFTPaddle::SetupMappingContext(const APlayerController* PlayerController)
+void AGFTPaddle::FireBall()
 {
-	const ULocalPlayer* Player = PlayerController->GetLocalPlayer();
-	if (Player == nullptr || InputMapping.IsNull())
-	{
-		return;
-	}
-
-	if (UEnhancedInputLocalPlayerSubsystem* InputSystem = Player->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
-	{
-		InputSystem->AddMappingContext(InputMapping.LoadSynchronous(), 1);
-	}
+	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("Ball fired!")));
 }

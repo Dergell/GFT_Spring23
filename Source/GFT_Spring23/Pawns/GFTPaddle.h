@@ -9,11 +9,14 @@
 class UArrowComponent;
 class UCameraComponent;
 class UCapsuleComponent;
-class UInputAction;
+class UGFTInputConfig;
 class UInputMappingContext;
 class USplineComponent;
 struct FInputActionInstance;
 
+/**
+ * Paddle representing the player, used the shoot and bounce back balls.
+ */
 UCLASS()
 class GFT_SPRING23_API AGFTPaddle : public APawn
 {
@@ -23,31 +26,19 @@ public:
 	// Sets default values for this pawn's properties
 	AGFTPaddle();
 
-	// Called when the pawn is possessed
-	virtual void PossessedBy(AController* NewController) override;
+	// Getters
+	UGFTInputConfig* GetInputConfig() const;
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-protected:
+	// Actions
 	void MovePaddle(const FInputActionInstance& Instance);
+	void FireBall();
 
 private:
-	void SetupMappingContext(const APlayerController* PlayerController);
-
-private:
+	// Used as RootComponent
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=GFT, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<USceneComponent> SceneRoot;
-	
-	// Scene component used to move the paddle independent of Camera & Spline
+
+	// Scene component used to move the paddle independent of Camera & Spline attach to SceneRoot
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=GFT, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<USceneComponent> PaddleAnchor;
 
@@ -70,10 +61,15 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=GFT, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UCameraComponent> Camera;
 
+	// Input configuration for this pawn
 	UPROPERTY(EditAnywhere, Category=GFT, meta=(AllowPrivateAccess = "true"))
-	TSoftObjectPtr<UInputMappingContext> InputMapping;
-	UPROPERTY(EditAnywhere, Category=GFT, meta=(AllowPrivateAccess = "true"))
-	TSoftObjectPtr<UInputAction> InputActionMove;
+	TSoftObjectPtr<UGFTInputConfig> InputConfig;
 
+	// The higher this value, the softer any movements will be
+	UPROPERTY(EditDefaultsOnly, Category=GFT, meta=(AllowPrivateAccess = "true"))
+	float MovementSensitivity = 100.f;
+
+	// Current position of the PaddleAnchor along the Spline
+	UPROPERTY(VisibleInstanceOnly, Category=GFT, meta=(AllowPrivateAccess = "true"))
 	float PositionOnSpline = 0.5f;
 };
