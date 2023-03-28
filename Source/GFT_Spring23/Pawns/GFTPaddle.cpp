@@ -10,6 +10,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Components/SplineComponent.h"
 #include "GFT_Spring23/Input/GFTInputConfig.h"
+#include "GFT_Spring23/System/GFTGameMode.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -67,5 +68,9 @@ void AGFTPaddle::MovePaddle(const FInputActionInstance& Instance)
 
 void AGFTPaddle::FireBall()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("Ball fired!")));
+	const AGFTGameMode* GameMode = Cast<AGFTGameMode>(UGameplayStatics::GetGameMode(this));
+	if (GameMode != nullptr)
+	{
+		GameMode->SpawnBall(BallSpawnArrow->GetComponentTransform());
+	}
 }
