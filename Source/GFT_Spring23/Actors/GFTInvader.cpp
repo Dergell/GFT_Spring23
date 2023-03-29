@@ -4,6 +4,8 @@
 #include "GFTInvader.h"
 
 #include "Components/BoxComponent.h"
+#include "GFT_Spring23/Interfaces/GFTGameFramework.h"
+#include "Kismet/GameplayStatics.h"
 
 AGFTInvader::AGFTInvader()
 {
@@ -24,4 +26,11 @@ AGFTInvader::AGFTInvader()
 void AGFTInvader::BallImpact_Implementation()
 {
 	Destroy();
+
+	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+	IGFTGameFramework* Framework = Cast<IGFTGameFramework>(PlayerController);
+	if (PlayerController != nullptr && Framework != nullptr)
+	{
+		Framework->Execute_ScoreUpdate(PlayerController, Points);
+	}
 }

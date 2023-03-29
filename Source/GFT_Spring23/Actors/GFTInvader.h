@@ -29,4 +29,8 @@ private:
 	// Mesh with disabled collision
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=GFT, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UStaticMeshComponent> Mesh;
+
+	// How many points this invader is worth once destroyed
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=GFT, meta=(AllowPrivateAccess = "true"))
+	int32 Points = 100;
 };

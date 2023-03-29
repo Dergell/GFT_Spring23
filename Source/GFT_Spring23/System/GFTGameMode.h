@@ -14,9 +14,17 @@ class GFT_SPRING23_API AGFTGameMode : public AGameModeBase
 	GENERATED_BODY()
 
 public:
+	// Will spawn a new ball on the paddle
 	void SpawnBall(const FTransform& WorldTransform) const;
 
 protected:
+	virtual void BeginPlay() override;
+
+	// Callback when an actor leaves the GameSpace trigger volume
+	UFUNCTION()
+	void OnActorLeavingGameSpace(AActor* OverlappedActor, AActor* OtherActor);
+
+	// Blueprint class to use when spawning a Ball
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=GFT)
 	TSubclassOf<AGFTBall> BallClass;
 };

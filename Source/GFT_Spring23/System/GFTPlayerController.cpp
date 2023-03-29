@@ -5,8 +5,32 @@
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "GFTPlayerState.h"
+#include "Blueprint/UserWidget.h"
 #include "GFT_Spring23/Input/GFTInputConfig.h"
 #include "GFT_Spring23/Pawns/GFTPaddle.h"
+#include "GFT_Spring23/UI/GFTPlayerHud.h"
+
+void AGFTPlayerController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (HudClass != nullptr)
+	{
+		HudWidget = CreateWidget<UGFTPlayerHud>(this, HudClass);
+		HudWidget->AddToViewport();
+	}
+}
+
+void AGFTPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	if (HudWidget != nullptr)
+	{
+		HudWidget->RemoveFromParent();
+	}
+}
 
 void AGFTPlayerController::OnPossess(APawn* aPawn)
 {
@@ -37,6 +61,34 @@ void AGFTPlayerController::OnUnPossess()
 	}
 
 	Super::OnUnPossess();
+}
+
+void AGFTPlayerController::ScoreUpdate_Implementation(int32 Points)
+{
+	AGFTPlayerState* State = GetPlayerState<AGFTPlayerState>();
+	if (State != nullptr)
+	{
+		State->UpdateScore(Points);
+	}
+
+	if (HudWidget != nullptr)
+	{
+		HudWidget->UpdateScore();
+	}
+}
+
+void AGFTPlayerController::BallLost_Implementation()
+{
+	AGFTPlayerState* State = GetPlayerState<AGFTPlayerState>();
+	if (State != nullptr)
+	{
+		State->SetLives(State->GetLives() - 1);
+	}
+
+	if (HudWidget != nullptr)
+	{
+		HudWidget->UpdateLives();
+	}
 }
 
 void AGFTPlayerController::BindInputActions()
