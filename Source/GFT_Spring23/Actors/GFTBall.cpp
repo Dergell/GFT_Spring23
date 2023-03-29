@@ -5,6 +5,7 @@
 
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "GFT_Spring23/Interfaces/GFTImpactable.h"
 
 AGFTBall::AGFTBall()
 {
@@ -12,11 +13,11 @@ AGFTBall::AGFTBall()
 	PrimaryActorTick.bCanEverTick = false;
 
 	Collision = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));
-	Collision->SetCollisionProfileName(TEXT("BlockAll"));
-	Collision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+	Collision->SetCollisionProfileName(TEXT("BlockAllDynamic"));
 	Collision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	Collision->SetUseCCD(true);
 	Collision->SetEnableGravity(false);
+	Collision->SetNotifyRigidBodyCollision(true);
 	RootComponent = Collision;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
@@ -36,4 +37,20 @@ AGFTBall::AGFTBall()
 	Projectile->bInterpRotation = true;
 	Projectile->bConstrainToPlane = true;
 	Projectile->SetPlaneConstraintNormal(FVector(1.f, 0.f, 0.f));
+}
+
+void AGFTBall::BeginPlay()
+{
+	Super::BeginPlay();
+
+	Collision->OnComponentHit.AddDynamic(this, &AGFTBall::OnHit);
+}
+
+void AGFTBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	const IGFTImpactable* ImpactInterface = Cast<IGFTImpactable>(OtherActor);
+	if (ImpactInterface != nullptr)
+	{
+		ImpactInterface->Execute_BallImpact(OtherActor);
+	}
 }

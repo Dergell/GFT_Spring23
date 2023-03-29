@@ -11,7 +11,7 @@ AGFTInvader::AGFTInvader()
 	PrimaryActorTick.bCanEverTick = false;
 
 	Collision = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision"));
-	Collision->SetCollisionProfileName(TEXT("BlockAll"));
+	Collision->SetCollisionProfileName(TEXT("BlockAllDynamic"));
 	Collision->SetEnableGravity(false);
 	RootComponent = Collision;
 
@@ -19,4 +19,9 @@ AGFTInvader::AGFTInvader()
 	Mesh->SetupAttachment(Collision);
 	Mesh->SetCollisionProfileName(TEXT("NoCollision"));
 	Mesh->SetGenerateOverlapEvents(false);
+}
+
+void AGFTInvader::BallImpact_Implementation()
+{
+	Destroy();
 }
