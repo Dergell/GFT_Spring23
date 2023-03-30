@@ -15,7 +15,7 @@ class GFT_SPRING23_API AGFTGameMode : public AGameModeBase
 
 public:
 	// Will spawn a new ball on the paddle
-	void SpawnBall(const FTransform& WorldTransform) const;
+	void SpawnBall(const FTransform& WorldTransform);
 
 protected:
 	virtual void BeginPlay() override;
@@ -27,4 +27,10 @@ protected:
 	// Blueprint class to use when spawning a Ball
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=GFT)
 	TSubclassOf<AGFTBall> BallClass;
+
+private:
+	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, Category=GFT, meta=(AllowPrivateAccess = "true"))
+	int32 ActiveBalls = 0;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=GFT, meta=(AllowPrivateAccess = "true"))
+	int32 MaxBalls = 1;
 };

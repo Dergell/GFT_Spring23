@@ -68,7 +68,7 @@ void AGFTPaddle::MovePaddle(const FInputActionInstance& Instance)
 
 void AGFTPaddle::FireBall()
 {
-	const AGFTGameMode* GameMode = Cast<AGFTGameMode>(UGameplayStatics::GetGameMode(this));
+	AGFTGameMode* GameMode = Cast<AGFTGameMode>(UGameplayStatics::GetGameMode(this));
 	if (GameMode != nullptr)
 	{
 		GameMode->SpawnBall(BallSpawnArrow->GetComponentTransform());

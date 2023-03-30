@@ -7,7 +7,7 @@
 #include "GFT_Spring23/Interfaces/GFTGameFramework.h"
 #include "Kismet/GameplayStatics.h"
 
-void AGFTGameMode::SpawnBall(const FTransform& WorldTransform) const
+void AGFTGameMode::SpawnBall(const FTransform& WorldTransform)
 {
 	if (BallClass == nullptr)
 	{
@@ -15,7 +15,18 @@ void AGFTGameMode::SpawnBall(const FTransform& WorldTransform) const
 		return;
 	}
 
-	GetWorld()->SpawnActor<AGFTBall>(BallClass, WorldTransform);
+	if (ActiveBalls >= MaxBalls)
+	{
+		UE_LOG(LogGameMode, Display, TEXT("Cannot spawn a new ball because MaxBalls is already reached."));
+		return;
+	}
+
+	UWorld* World = GetWorld();
+	if (World != nullptr)
+	{
+		World->SpawnActor<AGFTBall>(BallClass, WorldTransform);
+		ActiveBalls++;
+	}
 }
 
 void AGFTGameMode::BeginPlay()
@@ -32,11 +43,16 @@ void AGFTGameMode::BeginPlay()
 
 void AGFTGameMode::OnActorLeavingGameSpace(AActor* OverlappedActor, AActor* OtherActor)
 {
-	AController* Controller = UGameplayStatics::GetPlayerController(this, 0);
-	IGFTGameFramework* Framework = Cast<IGFTGameFramework>(Controller);
-	if (Framework != nullptr && OtherActor->IsA(AGFTBall::StaticClass()))
+	if (OtherActor->IsA(AGFTBall::StaticClass()))
 	{
-		Framework->Execute_BallLost(Controller);
+		AController* Controller = UGameplayStatics::GetPlayerController(this, 0);
+		IGFTGameFramework* Framework = Cast<IGFTGameFramework>(Controller);
+		if (Framework != nullptr)
+		{
+			Framework->Execute_BallLost(Controller);
+		}
+
+		ActiveBalls--;
 	}
 
 	OtherActor->Destroy();
