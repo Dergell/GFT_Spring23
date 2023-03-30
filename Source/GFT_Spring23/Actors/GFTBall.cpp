@@ -48,9 +48,8 @@ void AGFTBall::BeginPlay()
 
 void AGFTBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	const IGFTImpactable* ImpactInterface = Cast<IGFTImpactable>(OtherActor);
-	if (ImpactInterface != nullptr)
+	if (OtherActor != nullptr && OtherActor->Implements<UGFTImpactable>())
 	{
-		ImpactInterface->Execute_BallImpact(OtherActor);
+		IGFTImpactable::Execute_BallImpact(OtherActor);
 	}
 }

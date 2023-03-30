@@ -46,10 +46,9 @@ void AGFTGameMode::OnActorLeavingGameSpace(AActor* OverlappedActor, AActor* Othe
 	if (OtherActor->IsA(AGFTBall::StaticClass()))
 	{
 		AController* Controller = UGameplayStatics::GetPlayerController(this, 0);
-		IGFTGameFramework* Framework = Cast<IGFTGameFramework>(Controller);
-		if (Framework != nullptr)
+		if (Controller != nullptr && Controller->Implements<UGFTGameFramework>())
 		{
-			Framework->Execute_BallLost(Controller);
+			IGFTGameFramework::Execute_BallLost(Controller);
 		}
 
 		ActiveBalls--;

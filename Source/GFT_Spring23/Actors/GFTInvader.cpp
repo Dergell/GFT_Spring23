@@ -28,9 +28,8 @@ void AGFTInvader::BallImpact_Implementation()
 	Destroy();
 
 	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
-	IGFTGameFramework* Framework = Cast<IGFTGameFramework>(PlayerController);
-	if (PlayerController != nullptr && Framework != nullptr)
+	if (PlayerController != nullptr && PlayerController->Implements<UGFTGameFramework>())
 	{
-		Framework->Execute_ScoreUpdate(PlayerController, Points);
+		IGFTGameFramework::Execute_ScoreUpdate(PlayerController, Points);
 	}
 }
