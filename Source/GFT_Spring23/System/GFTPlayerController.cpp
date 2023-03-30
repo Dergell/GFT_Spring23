@@ -80,9 +80,15 @@ void AGFTPlayerController::ScoreUpdate_Implementation(int32 Points)
 void AGFTPlayerController::BallLost_Implementation()
 {
 	AGFTPlayerState* State = GetPlayerState<AGFTPlayerState>();
-	if (State != nullptr)
+	if (State == nullptr)
 	{
-		State->SetLives(State->GetLives() - 1);
+		return;
+	}
+
+	State->SetLives(State->GetLives() - 1);
+	if (State->GetLives() <= 0)
+	{
+		OnGameOver.Broadcast();
 	}
 
 	if (HudWidget != nullptr)

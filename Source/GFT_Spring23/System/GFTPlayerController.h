@@ -11,10 +11,16 @@ class UGFTPlayerHud;
 class AGFTPaddle;
 class UInputMappingContext;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameOver);
+
 UCLASS()
 class GFT_SPRING23_API AGFTPlayerController : public APlayerController, public IGFTGameFramework
 {
 	GENERATED_BODY()
+
+public:
+	UPROPERTY(BlueprintAssignable, Category=GFT)
+	FOnGameOver OnGameOver;
 
 protected:
 	// Generic overrides

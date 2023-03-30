@@ -3,9 +3,22 @@
 
 #include "GFTGameMode.h"
 
+#include "GFTGameInstance.h"
+#include "GFTPlayerController.h"
 #include "GFT_Spring23/Actors/GFTBall.h"
 #include "GFT_Spring23/Interfaces/GFTGameFramework.h"
 #include "Kismet/GameplayStatics.h"
+
+void AGFTGameMode::PostLogin(APlayerController* NewPlayer)
+{
+	Super::PostLogin(NewPlayer);
+
+	AGFTPlayerController* Player = Cast<AGFTPlayerController>(NewPlayer);
+	if (Player != nullptr)
+	{
+		Player->OnGameOver.AddDynamic(this, &AGFTGameMode::GameOver);
+	}
+}
 
 void AGFTGameMode::SpawnBall(const FTransform& WorldTransform)
 {
@@ -39,6 +52,11 @@ void AGFTGameMode::BeginPlay()
 	{
 		GameSpace->OnActorEndOverlap.AddDynamic(this, &AGFTGameMode::OnActorLeavingGameSpace);
 	}
+}
+
+void AGFTGameMode::GameOver()
+{
+	GetGameInstance<UGFTGameInstance>()->LoadMenuLevel();
 }
 
 void AGFTGameMode::OnActorLeavingGameSpace(AActor* OverlappedActor, AActor* OtherActor)

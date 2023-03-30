@@ -22,6 +22,22 @@ void UGFTGameInstance::LoadMenu()
 	}
 }
 
+void UGFTGameInstance::LoadMenuLevel()
+{
+	const FString LevelPath = MenuLevel.GetLongPackageName();
+	if (LevelPath.IsEmpty())
+	{
+		UE_LOG(LogLevel, Warning, TEXT("No MenuLevel set in GameInstance."));
+		return;
+	}
+
+	UWorld* World = GetWorld();
+	if (World != nullptr)
+	{
+		World->ServerTravel(LevelPath);
+	}
+}
+
 void UGFTGameInstance::Quit()
 {
 	// Seems like this is how to do it, according to UKismetSystemLibrary::QuitGame

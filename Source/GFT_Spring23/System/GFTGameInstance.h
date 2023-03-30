@@ -22,6 +22,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void LoadMenu();
 
+	// Transition to the main menu level
+	UFUNCTION(BlueprintCallable)
+	void LoadMenuLevel();
+
 protected:
 	// Quit the game
 	virtual void Quit() override;
@@ -36,6 +40,10 @@ protected:
 	// Level to be loaded on play
 	UPROPERTY(EditDefaultsOnly)
 	TSoftObjectPtr<UWorld> MainLevel;
+
+	// Level to be loaded on game over
+	UPROPERTY(EditDefaultsOnly)
+	TSoftObjectPtr<UWorld> MenuLevel;
 
 private:
 	// Remember the main menu, so we can shut it down later 
