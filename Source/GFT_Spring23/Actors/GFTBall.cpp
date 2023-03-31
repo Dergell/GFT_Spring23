@@ -36,7 +36,7 @@ AGFTBall::AGFTBall()
 	Projectile->bInterpMovement = true;
 	Projectile->bInterpRotation = true;
 	Projectile->bConstrainToPlane = true;
-	Projectile->SetPlaneConstraintNormal(FVector(1.f, 0.f, 0.f));
+	Projectile->SetPlaneConstraintNormal(FVector(0.f, 1.f, 0.f));
 }
 
 void AGFTBall::BeginPlay()
