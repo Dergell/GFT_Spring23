@@ -33,14 +33,38 @@ void AGFTInvaderManager::OnConstruction(const FTransform& Transform)
 	{
 		for (int CurrentRow = 0; CurrentRow < RowCount; ++CurrentRow)
 		{
-			FTransform SpawnTransform = FTransform(SpawnLocation);
+			// Add new child component and set class
 			UChildActorComponent* ChildComponent = Cast<UChildActorComponent>(
-				AddComponentByClass(UChildActorComponent::StaticClass(), false, SpawnTransform, false)
+				AddComponentByClass(UChildActorComponent::StaticClass(), false, FTransform(SpawnLocation), false)
 			);
 			ChildComponent->SetChildActorClass(InvaderClass);
+
+			// Register a callback on the child
+			AGFTInvader* Invader = Cast<AGFTInvader>(ChildComponent->GetChildActor());
+			Invader->OnInvaderLeavingVolume.AddDynamic(this, &AGFTInvaderManager::OnInvaderLeavingVolume);
+
 			SpawnLocation.Z += RowDistance;
 		}
 		SpawnLocation.Z = RowDistance / 2;
 		SpawnLocation.X += ColumnDistance;
+	}
+}
+
+void AGFTInvaderManager::OnInvaderLeavingVolume(AActor* Invader, AActor* Volume)
+{
+	FVector Origin, Extends;
+	Volume->GetActorBounds(false, Origin, Extends);
+	const FVector InvaderLocation = Invader->GetActorLocation();
+
+	// If we leave the volume at the bottom, stop downward movement
+	if (InvaderLocation.Z <= Origin.Z - Extends.Z)
+	{
+		InvaderMovement->SetShouldMoveDown(false);
+	}
+
+	// If we leave the volume left or right, revert movement vector
+	if (InvaderLocation.X >= Origin.X + Extends.X || InvaderLocation.X <= Origin.X - Extends.X)
+	{
+		InvaderMovement->RevertMovementVector();
 	}
 }

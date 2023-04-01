@@ -10,6 +10,27 @@ UGFTInvaderMovement::UGFTInvaderMovement()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
+void UGFTInvaderMovement::RevertMovementVector()
+{
+	if (bWasReverted)
+	{
+		return;
+	}
+
+	if (bShouldMoveDown)
+	{
+		MovementVector.Z = -FMath::Abs(MovementVector.X);
+	}
+
+	MovementVector.X *= -1;
+	bWasReverted = true;
+}
+
+void UGFTInvaderMovement::SetShouldMoveDown(bool bInShouldMoveDown)
+{
+	bShouldMoveDown = bInShouldMoveDown;
+}
+
 void UGFTInvaderMovement::BeginPlay()
 {
 	Super::BeginPlay();
@@ -20,5 +41,20 @@ void UGFTInvaderMovement::BeginPlay()
 void UGFTInvaderMovement::PerformMove()
 {
 	const FVector Location = GetOwner()->GetActorLocation();
-	GetOwner()->SetActorLocation(Location + MovementVector);
+	FVector NewLocation = Location;
+
+	// If there's any downward movement, perform and remove it
+	if (MovementVector.Z != 0)
+	{
+		NewLocation.Z += MovementVector.Z;
+		MovementVector.Z = 0;
+	}
+	// only do horizontal movement if there no downward movement needed
+	else
+	{
+		NewLocation.X += MovementVector.X;
+	}
+
+	GetOwner()->SetActorLocation(NewLocation);
+	bWasReverted = false;
 }

@@ -23,6 +23,10 @@ public:
 	// Will be called on every single creation or update of the actor, even in editor
 	virtual void OnConstruction(const FTransform& Transform) override;
 
+	// Callback whenever an invader leaves the designated volume
+	UFUNCTION()
+	void OnInvaderLeavingVolume(AActor* Invader, AActor* Volume);
+
 private:
 	// Billboard used as root, so we can see the actor in editor
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=GFT, meta=(AllowPrivateAccess = "true"))

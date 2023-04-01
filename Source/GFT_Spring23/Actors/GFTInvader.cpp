@@ -23,6 +23,13 @@ AGFTInvader::AGFTInvader()
 	Mesh->SetGenerateOverlapEvents(false);
 }
 
+void AGFTInvader::BeginPlay()
+{
+	Super::BeginPlay();
+
+	Collision->OnComponentEndOverlap.AddDynamic(this, &AGFTInvader::OnEndOverlap);
+}
+
 void AGFTInvader::BallImpact_Implementation()
 {
 	Destroy();
@@ -31,5 +38,13 @@ void AGFTInvader::BallImpact_Implementation()
 	if (PlayerController != nullptr && PlayerController->Implements<UGFTGameFramework>())
 	{
 		IGFTGameFramework::Execute_ScoreUpdate(PlayerController, Points);
+	}
+}
+
+void AGFTInvader::OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (OtherActor->ActorHasTag(TEXT("InvaderSpace")))
+	{
+		OnInvaderLeavingVolume.Broadcast(this, OtherActor);
 	}
 }

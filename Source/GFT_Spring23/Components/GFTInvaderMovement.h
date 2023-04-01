@@ -18,11 +18,18 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+public:
+	// Flips the MovementVector and may add downward movement (depending on bShouldMoveDown)
+	void RevertMovementVector();
+
+	// Setter
+	void SetShouldMoveDown(bool bInShouldMoveDown);
+
+private:
 	// Callback used for MovementTimer
 	UFUNCTION()
 	void PerformMove();
 
-private:
 	// The rate in seconds when movement should be performed
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="GFT|InvaderMovement", meta=(AllowPrivateAccess = "true"))
 	float MovementRate = 5.f;
@@ -30,6 +37,14 @@ private:
 	// The vector where the next movement will end
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="GFT|InvaderMovement", meta=(AllowPrivateAccess = "true"))
 	FVector MovementVector = FVector(0.f, 0.f, 0.f);
+
+	// When true, will add downward movement whenever RevertMovementVector is called
+	UPROPERTY(VisibleInstanceOnly)
+	bool bShouldMoveDown = true;
+
+	// Keeps track if we already reverted this movement cycle
+	UPROPERTY(VisibleInstanceOnly)
+	bool bWasReverted = false;
 
 	FTimerHandle MovementTimer;
 };
