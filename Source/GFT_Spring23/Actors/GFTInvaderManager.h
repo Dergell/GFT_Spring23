@@ -41,7 +41,7 @@ private:
 	TObjectPtr<UGFTInvaderMovement> InvaderMovement;
 
 	// Allows selection if blueprint used for spawning
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=GFT, meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=GFT, meta=(AllowPrivateAccess = "true"))
 	TSubclassOf<AGFTInvader> InvaderClass;
 
 	// Position of the editor utility widget 

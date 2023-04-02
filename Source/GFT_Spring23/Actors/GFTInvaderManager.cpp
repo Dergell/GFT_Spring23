@@ -22,6 +22,12 @@ void AGFTInvaderManager::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
 
+	if (InvaderClass == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No Invader Class set in Blueprint, please check."));
+		return;
+	}
+
 	// Calculate how many columns and rows are needed
 	const int ColumnCount = FMath::TruncToInt(WidgetPosition.X / ColumnDistance);
 	const int RowCount = FMath::TruncToInt(WidgetPosition.Z / RowDistance);
