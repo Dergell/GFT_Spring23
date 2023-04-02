@@ -4,85 +4,108 @@
 #include "GFTInvaderManager.h"
 
 #include "GFTInvader.h"
-#include "Components/BillboardComponent.h"
-#include "GFT_Spring23/Components/GFTInvaderMovement.h"
+#include "Kismet/GameplayStatics.h"
 
 AGFTInvaderManager::AGFTInvaderManager()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-
-	Billboard = CreateDefaultSubobject<UBillboardComponent>(TEXT("Billboard"));
-	RootComponent = Billboard;
-
-	InvaderMovement = CreateDefaultSubobject<UGFTInvaderMovement>(TEXT("InvaderMovement"));
 }
 
-void AGFTInvaderManager::OnConstruction(const FTransform& Transform)
+void AGFTInvaderManager::BeginPlay()
 {
-	Super::OnConstruction(Transform);
+	Super::BeginPlay();
 
-	if (InvaderClass == nullptr)
+	TArray<AActor*> Invaders;
+	UGameplayStatics::GetAllActorsOfClass(this, AGFTInvader::StaticClass(), Invaders);
+	for (AActor* InvaderActor : Invaders)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("No Invader Class set in Blueprint, please check."));
+		AGFTInvader* Invader = Cast<AGFTInvader>(InvaderActor);
+		InvaderList.Add(Invader);
+		Invader->OnActorBeginOverlap.AddDynamic(this, &AGFTInvaderManager::OnInvaderBeginOverlap);
+		Invader->OnActorEndOverlap.AddDynamic(this, &AGFTInvaderManager::OnInvaderEndOverlap);
+		Invader->OnDestroyed.AddDynamic(this, &AGFTInvaderManager::OnInvaderDestroyed);
+	}
+}
+
+void AGFTInvaderManager::Initialize(float InMovementRate, float InFinalMovementRate)
+{
+	MovementRate = InMovementRate;
+	FinalMovementRate = InFinalMovementRate;
+	MovementVector = FVector(100, 0, 0);
+
+	GetWorld()->GetTimerManager().SetTimer(MovementTimer, this, &AGFTInvaderManager::PerformMove, MovementRate);
+}
+
+void AGFTInvaderManager::OnInvaderBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
+{
+	if (OtherActor->ActorHasTag(TEXT("BlockZ")))
+	{
+		bShouldMoveDown = false;
+	}
+
+	if (!bWasReverted && OtherActor->ActorHasTag(TEXT("BlockX")))
+	{
+		if (bShouldMoveDown)
+		{
+			MovementVector.Z = -100;
+		}
+		MovementVector.X *= -1;
+		bWasReverted = true;
+	}
+}
+
+void AGFTInvaderManager::OnInvaderEndOverlap(AActor* OverlappedActor, AActor* OtherActor)
+{
+	if (!OtherActor->ActorHasTag(TEXT("BlockZ")))
+	{
 		return;
 	}
 
-	// Calculate how many columns and rows are needed
-	const int ColumnCount = FMath::TruncToInt(WidgetPosition.X / ColumnDistance);
-	const int RowCount = FMath::TruncToInt(WidgetPosition.Z / RowDistance);
-
-	// Using the halved distances for initial location keeps all invaders between the manager and widget locations 
-	FVector SpawnLocation = FVector(ColumnDistance / 2, 0, RowDistance / 2);
-
-	for (int CurrentColumn = 0; CurrentColumn < ColumnCount; ++CurrentColumn)
+	TArray<AActor*> OverlappingInvaders;
+	OtherActor->GetOverlappingActors(OverlappingInvaders, AGFTInvader::StaticClass());
+	if (OverlappingInvaders.IsEmpty())
 	{
-		for (int CurrentRow = 0; CurrentRow < RowCount; ++CurrentRow)
-		{
-			// Add new child component and set class
-			UChildActorComponent* ChildComponent = Cast<UChildActorComponent>(
-				AddComponentByClass(UChildActorComponent::StaticClass(), false, FTransform(SpawnLocation), false)
-			);
-			ChildComponent->SetChildActorClass(InvaderClass);
-
-			// Register callbacks on the child
-			AGFTInvader* Invader = Cast<AGFTInvader>(ChildComponent->GetChildActor());
-			Invader->OnInvaderLeavingVolume.AddDynamic(this, &AGFTInvaderManager::OnInvaderLeavingVolume);
-			Invader->OnDestroyed.AddDynamic(this, &AGFTInvaderManager::OnInvaderDestroyed);
-
-			SpawnLocation.Z += RowDistance;
-		}
-		SpawnLocation.Z = RowDistance / 2;
-		SpawnLocation.X += ColumnDistance;
-	}
-}
-
-void AGFTInvaderManager::OnInvaderLeavingVolume(AActor* Invader, AActor* Volume)
-{
-	FVector Origin, Extends;
-	Volume->GetActorBounds(false, Origin, Extends);
-	const FVector InvaderLocation = Invader->GetActorLocation();
-
-	// If we leave the volume at the bottom, stop downward movement
-	if (InvaderLocation.Z <= Origin.Z - Extends.Z)
-	{
-		InvaderMovement->SetShouldMoveDown(false);
-	}
-
-	// If we leave the volume left or right, revert movement vector
-	if (InvaderLocation.X >= Origin.X + Extends.X || InvaderLocation.X <= Origin.X - Extends.X)
-	{
-		InvaderMovement->RevertMovementVector();
+		bShouldMoveDown = true;
 	}
 }
 
 void AGFTInvaderManager::OnInvaderDestroyed(AActor* DestroyedActor)
 {
-	// Check if we are in game to prevent value change in editor
-	if (!GetWorld()->IsGameWorld())
+	const float Reduction = (MovementRate - FinalMovementRate) / InvaderList.Num();
+	MovementRate -= Reduction;
+
+	AGFTInvader* Invader = Cast<AGFTInvader>(DestroyedActor);
+	InvaderList.Remove(Invader);
+}
+
+void AGFTInvaderManager::PerformMove()
+{
+	// Cache the currently used vector, since it will change while we move the invaders
+	const FVector CurrentVector = MovementVector;
+	// Reset Z movement, only required once
+	MovementVector.Z = 0;
+
+	for (AGFTInvader* Invader : InvaderList)
 	{
-		return;
+		FVector Location = Invader->GetActorLocation();
+
+		// Z movement has priority, only do X movement if no Z movement is required
+		if (CurrentVector.Z != 0)
+		{
+			Location.Z += CurrentVector.Z;
+		}
+		else
+		{
+			Location.X += CurrentVector.X;
+		}
+
+		Invader->SetActorLocation(Location);
 	}
 
-	InvaderMovement->DecreaseMovementRate();
+	// Reset flag after each full cycle
+	bWasReverted = false;
+
+	// Set new timer for next movement here instead of looping, since MovementRate can change at any time
+	GetWorld()->GetTimerManager().SetTimer(MovementTimer, this, &AGFTInvaderManager::PerformMove, MovementRate);
 }

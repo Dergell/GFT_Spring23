@@ -9,8 +9,6 @@
 
 class UBoxComponent;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnInvaderLeavingVolume, AActor*, Invader, AActor*, Volume);
-
 UCLASS()
 class GFT_SPRING23_API AGFTInvader : public AActor, public IGFTImpactable
 {
@@ -20,22 +18,10 @@ public:
 	// Sets default values for this actor's properties
 	AGFTInvader();
 
-protected:
-	virtual void BeginPlay() override;
-
-public:
+private:
 	// React to a ball impact
 	virtual void BallImpact_Implementation() override;
 
-	// Callback for whenever we leave an overlap
-	UFUNCTION()
-	void OnEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-
-	// Broadcast when leaving a volume with tag "InvaderSpace"
-	UPROPERTY(BlueprintAssignable)
-	FOnInvaderLeavingVolume OnInvaderLeavingVolume;
-
-private:
 	// Box used as RootComponent and for collision
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=GFT, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UBoxComponent> Collision;

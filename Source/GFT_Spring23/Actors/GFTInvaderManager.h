@@ -6,13 +6,12 @@
 #include "GameFramework/Actor.h"
 #include "GFTInvaderManager.generated.h"
 
-class UGFTInvaderMovement;
 class AGFTInvader;
 
 /*
- * This class allows easy placement of multiple invaders on the map and keeps them grouped for simple movement.
+ * This class will manage movement for all invaders in the level
  */
-UCLASS()
+UCLASS(NotBlueprintable)
 class GFT_SPRING23_API AGFTInvaderManager : public AActor
 {
 	GENERATED_BODY()
@@ -20,39 +19,45 @@ class GFT_SPRING23_API AGFTInvaderManager : public AActor
 public:
 	AGFTInvaderManager();
 
-	// Will be called on every single creation or update of the actor, even in editor
-	virtual void OnConstruction(const FTransform& Transform) override;
+protected:
+	virtual void BeginPlay() override;
 
-	// Callback whenever an invader leaves the designated volume
+public:
+	// Set some values from outside and start timer
+	void Initialize(float InMovementRate, float InFinalMovementRate);
+
+private:
+	// Callback whenever an invader overlaps something
 	UFUNCTION()
-	void OnInvaderLeavingVolume(AActor* Invader, AActor* Volume);
+	void OnInvaderBeginOverlap(AActor* OverlappedActor, AActor* OtherActor);
+
+	// Callback whenever an invader ends overlapping something
+	UFUNCTION()
+	void OnInvaderEndOverlap(AActor* OverlappedActor, AActor* OtherActor);
 
 	// Callback whenever an invader was destroyed
 	UFUNCTION()
 	void OnInvaderDestroyed(AActor* DestroyedActor);
 
-private:
-	// Billboard used as root, so we can see the actor in editor
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=GFT, meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UBillboardComponent> Billboard;
+	// Callback for MovementTimer
+	UFUNCTION()
+	void PerformMove();
 
-	// Component responsible for moving the invaders
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=GFT, meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UGFTInvaderMovement> InvaderMovement;
+	// Keep a list of all invaders in the level
+	TArray<AGFTInvader*> InvaderList;
 
-	// Allows selection if blueprint used for spawning
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=GFT, meta=(AllowPrivateAccess = "true"))
-	TSubclassOf<AGFTInvader> InvaderClass;
+	// Internal values used for movement calculations
+	UPROPERTY(VisibleInstanceOnly)
+	float MovementRate = 1.f;
+	UPROPERTY(VisibleInstanceOnly)
+	float FinalMovementRate = 0.1f;
+	UPROPERTY(VisibleInstanceOnly)
+	FVector MovementVector;
+	UPROPERTY(VisibleInstanceOnly)
+	bool bWasReverted = false;
+	UPROPERTY(VisibleInstanceOnly)
+	bool bShouldMoveDown = true;
 
-	// Position of the editor utility widget 
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category=GFT, meta=(AllowPrivateAccess = "true", MakeEditWidget = "true"))
-	FVector WidgetPosition;
-
-	// ColumnsDistance determines how many columns of invaders are spawned
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category=GFT, meta=(AllowPrivateAccess = "true"))
-	float ColumnDistance = 100.f;
-
-	// RowDistance determines how many invaders fit in each column
-	UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category=GFT, meta=(AllowPrivateAccess = "true"))
-	float RowDistance = 100.f;
+	// Timer to handle repeated movement
+	FTimerHandle MovementTimer;
 };

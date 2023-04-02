@@ -6,6 +6,7 @@
 #include "GFTGameInstance.h"
 #include "GFTPlayerController.h"
 #include "GFT_Spring23/Actors/GFTBall.h"
+#include "GFT_Spring23/Actors/GFTInvaderManager.h"
 #include "GFT_Spring23/Interfaces/GFTGameFramework.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -45,6 +46,9 @@ void AGFTGameMode::SpawnBall(const FTransform& WorldTransform)
 void AGFTGameMode::BeginPlay()
 {
 	Super::BeginPlay();
+
+	InvaderManager = GetWorld()->SpawnActor<AGFTInvaderManager>(AGFTInvaderManager::StaticClass());
+	InvaderManager->Initialize(MovementRate, FinalMovementRate);
 
 	TArray<AActor*> GameSpaces;
 	UGameplayStatics::GetAllActorsWithTag(this, TEXT("GameSpace"), GameSpaces);
