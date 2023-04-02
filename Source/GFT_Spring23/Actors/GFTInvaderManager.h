@@ -27,6 +27,10 @@ public:
 	UFUNCTION()
 	void OnInvaderLeavingVolume(AActor* Invader, AActor* Volume);
 
+	// Callback whenever an invader was destroyed
+	UFUNCTION()
+	void OnInvaderDestroyed(AActor* DestroyedActor);
+
 private:
 	// Billboard used as root, so we can see the actor in editor
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=GFT, meta=(AllowPrivateAccess = "true"))

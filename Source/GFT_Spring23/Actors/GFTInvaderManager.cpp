@@ -39,9 +39,10 @@ void AGFTInvaderManager::OnConstruction(const FTransform& Transform)
 			);
 			ChildComponent->SetChildActorClass(InvaderClass);
 
-			// Register a callback on the child
+			// Register callbacks on the child
 			AGFTInvader* Invader = Cast<AGFTInvader>(ChildComponent->GetChildActor());
 			Invader->OnInvaderLeavingVolume.AddDynamic(this, &AGFTInvaderManager::OnInvaderLeavingVolume);
+			Invader->OnDestroyed.AddDynamic(this, &AGFTInvaderManager::OnInvaderDestroyed);
 
 			SpawnLocation.Z += RowDistance;
 		}
@@ -67,4 +68,15 @@ void AGFTInvaderManager::OnInvaderLeavingVolume(AActor* Invader, AActor* Volume)
 	{
 		InvaderMovement->RevertMovementVector();
 	}
+}
+
+void AGFTInvaderManager::OnInvaderDestroyed(AActor* DestroyedActor)
+{
+	// Check if we are in game to prevent value change in editor
+	if (!GetWorld()->IsGameWorld())
+	{
+		return;
+	}
+
+	InvaderMovement->DecreaseMovementRate();
 }

@@ -26,6 +26,17 @@ void UGFTInvaderMovement::RevertMovementVector()
 	bWasReverted = true;
 }
 
+void UGFTInvaderMovement::DecreaseMovementRate()
+{
+	if (MovementRate - MovementDecreaseRate <= 0)
+	{
+		UE_LOG(LogActor, Warning, TEXT("Cannot reduce movement rate below zero, please increase MovementDecreaseRate."));
+		return;
+	}
+
+	MovementRate -= MovementDecreaseRate;
+}
+
 void UGFTInvaderMovement::SetShouldMoveDown(bool bInShouldMoveDown)
 {
 	bShouldMoveDown = bInShouldMoveDown;
@@ -35,7 +46,7 @@ void UGFTInvaderMovement::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetWorld()->GetTimerManager().SetTimer(MovementTimer, this, &UGFTInvaderMovement::PerformMove, MovementRate, true);
+	GetWorld()->GetTimerManager().SetTimer(MovementTimer, this, &UGFTInvaderMovement::PerformMove, MovementRate);
 }
 
 void UGFTInvaderMovement::PerformMove()
@@ -57,4 +68,7 @@ void UGFTInvaderMovement::PerformMove()
 
 	GetOwner()->SetActorLocation(NewLocation);
 	bWasReverted = false;
+
+	// Set new timer for next movement here instead of looping, since MovementRate can change at any time
+	GetWorld()->GetTimerManager().SetTimer(MovementTimer, this, &UGFTInvaderMovement::PerformMove, MovementRate);
 }
