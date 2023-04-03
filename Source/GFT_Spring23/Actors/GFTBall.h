@@ -15,12 +15,16 @@ class GFT_SPRING23_API AGFTBall : public AActor
 	GENERATED_BODY()
 
 public:
-	// Sets default values for this actor's properties
 	AGFTBall();
 
 protected:
 	virtual void BeginPlay() override;
 
+	// Callback when we end an overlap
+	UFUNCTION()
+	void OnEndOverlap(AActor* OverlappedActor, AActor* OtherActor);
+
+	// Callback when we hit something
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 

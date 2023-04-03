@@ -21,26 +21,31 @@ void AGFTGameMode::PostLogin(APlayerController* NewPlayer)
 	}
 }
 
-void AGFTGameMode::SpawnBall(const FTransform& WorldTransform)
+bool AGFTGameMode::IsBallReady()
+{
+	if (ActiveBalls >= MaxBalls)
+	{
+		UE_LOG(LogGameMode, Display, TEXT("Cannot spawn a new ball because MaxBalls is already reached."));
+		return false;
+	}
+
+	return true;
+}
+
+void AGFTGameMode::AddActiveBall()
+{
+	ActiveBalls++;
+}
+
+TSubclassOf<AGFTBall> AGFTGameMode::GetBallClass() const
 {
 	if (BallClass == nullptr)
 	{
 		UE_LOG(LogGameMode, Warning, TEXT("There is no Ball Class set in the GameMode, please check."));
-		return;
+		return nullptr;
 	}
 
-	if (ActiveBalls >= MaxBalls)
-	{
-		UE_LOG(LogGameMode, Display, TEXT("Cannot spawn a new ball because MaxBalls is already reached."));
-		return;
-	}
-
-	UWorld* World = GetWorld();
-	if (World != nullptr)
-	{
-		World->SpawnActor<AGFTBall>(BallClass, WorldTransform);
-		ActiveBalls++;
-	}
+	return BallClass;
 }
 
 void AGFTGameMode::BeginPlay()
@@ -55,32 +60,9 @@ void AGFTGameMode::BeginPlay()
 	InvaderConfig.MinAttackInterval = MinAttackInterval;
 	InvaderConfig.MaxAttackInterval = MaxAttackInterval;
 	InvaderManager->Initialize(InvaderConfig);
-
-	TArray<AActor*> GameSpaces;
-	UGameplayStatics::GetAllActorsWithTag(this, TEXT("GameSpace"), GameSpaces);
-	for (AActor* GameSpace : GameSpaces)
-	{
-		GameSpace->OnActorEndOverlap.AddDynamic(this, &AGFTGameMode::OnActorLeavingGameSpace);
-	}
 }
 
 void AGFTGameMode::GameOver()
 {
 	GetGameInstance<UGFTGameInstance>()->LoadMenuLevel();
-}
-
-void AGFTGameMode::OnActorLeavingGameSpace(AActor* OverlappedActor, AActor* OtherActor)
-{
-	if (OtherActor->IsA(AGFTBall::StaticClass()))
-	{
-		AController* Controller = UGameplayStatics::GetPlayerController(this, 0);
-		if (Controller != nullptr && Controller->Implements<UGFTGameFramework>())
-		{
-			IGFTGameFramework::Execute_BallLost(Controller);
-		}
-
-		ActiveBalls--;
-	}
-
-	OtherActor->Destroy();
 }

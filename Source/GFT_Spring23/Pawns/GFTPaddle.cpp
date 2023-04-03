@@ -9,6 +9,7 @@
 #include "Components/ArrowComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SplineComponent.h"
+#include "GFT_Spring23/Actors/GFTBall.h"
 #include "GFT_Spring23/Input/GFTInputConfig.h"
 #include "GFT_Spring23/System/GFTGameMode.h"
 #include "Kismet/GameplayStatics.h"
@@ -69,8 +70,17 @@ void AGFTPaddle::MovePaddle(const FInputActionInstance& Instance)
 void AGFTPaddle::FireBall()
 {
 	AGFTGameMode* GameMode = Cast<AGFTGameMode>(UGameplayStatics::GetGameMode(this));
-	if (GameMode != nullptr)
+	if (GameMode == nullptr)
 	{
-		GameMode->SpawnBall(BallSpawnArrow->GetComponentTransform());
+		return;
+	}
+
+	if (GameMode->IsBallReady() && GameMode->GetBallClass() != nullptr)
+	{
+		FActorSpawnParameters Params;
+		Params.Owner = GetController();
+		Params.Instigator = this;
+		GetWorld()->SpawnActor<AGFTBall>(GameMode->GetBallClass(), BallSpawnArrow->GetComponentTransform(), Params);
+		GameMode->AddActiveBall();
 	}
 }

@@ -17,8 +17,14 @@ class GFT_SPRING23_API AGFTGameMode : public AGameModeBase
 public:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
-	// Will spawn a new ball on the paddle
-	void SpawnBall(const FTransform& WorldTransform);
+	// Getter
+	TSubclassOf<AGFTBall> GetBallClass() const;
+
+	// Returns true if ActiveBalls is smaller than MaxBalls
+	bool IsBallReady();
+
+	// Adds one to ActiveBalls
+	void AddActiveBall();
 
 protected:
 	virtual void BeginPlay() override;
@@ -26,10 +32,6 @@ protected:
 	// Callback when the player lost all lives
 	UFUNCTION()
 	void GameOver();
-
-	// Callback when an actor leaves the GameSpace trigger volume
-	UFUNCTION()
-	void OnActorLeavingGameSpace(AActor* OverlappedActor, AActor* OtherActor);
 
 	// Blueprint class to use when spawning a Ball
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="GFT|Ball Configuration")

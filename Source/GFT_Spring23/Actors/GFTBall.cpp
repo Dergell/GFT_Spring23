@@ -5,6 +5,7 @@
 
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
+#include "GFT_Spring23/Interfaces/GFTGameFramework.h"
 #include "GFT_Spring23/Interfaces/GFTImpactable.h"
 
 AGFTBall::AGFTBall()
@@ -43,7 +44,22 @@ void AGFTBall::BeginPlay()
 {
 	Super::BeginPlay();
 
+	OnActorEndOverlap.AddDynamic(this, &AGFTBall::OnEndOverlap);
 	Collision->OnComponentHit.AddDynamic(this, &AGFTBall::OnHit);
+}
+
+void AGFTBall::OnEndOverlap(AActor* OverlappedActor, AActor* OtherActor)
+{
+	if (OtherActor->ActorHasTag(TEXT("GameSpace")))
+	{
+		AController* Controller = GetOwner<AController>();
+		if (Controller != nullptr && Controller->Implements<UGFTGameFramework>())
+		{
+			IGFTGameFramework::Execute_BallLost(Controller);
+		}
+
+		Destroy();
+	}
 }
 
 void AGFTBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

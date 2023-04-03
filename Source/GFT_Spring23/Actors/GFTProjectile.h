@@ -20,10 +20,15 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-private:
+	// Callback when we end an overlap
+	UFUNCTION()
+	void OnEndOverlap(AActor* OverlappedActor, AActor* OtherActor);
+
+	// Callback when we hit something
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
+private:
 	// Sphere used as RootComponent and for collision
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=GFT, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<USphereComponent> Collision;

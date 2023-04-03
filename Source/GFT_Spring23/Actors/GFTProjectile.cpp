@@ -40,7 +40,16 @@ void AGFTProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 
+	OnActorEndOverlap.AddDynamic(this, &AGFTProjectile::OnEndOverlap);
 	Collision->OnComponentHit.AddDynamic(this, &AGFTProjectile::OnHit);
+}
+
+void AGFTProjectile::OnEndOverlap(AActor* OverlappedActor, AActor* OtherActor)
+{
+	if (OtherActor->ActorHasTag(TEXT("GameSpace")))
+	{
+		Destroy();
+	}
 }
 
 void AGFTProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
