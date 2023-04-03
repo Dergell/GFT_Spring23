@@ -52,5 +52,13 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="GFT|Invader Movement", meta=(AllowPrivateAccess = "true"))
 	float FinalMovementRate = 0.1f;
 
+	// The minimum time in seconds that need to pass between attacks
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="GFT|Attack Configuration", meta=(AllowPrivateAccess = "true"))
+	float MinAttackInterval = 1.f;
+
+	// The maximum time in seconds until the next attack
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="GFT|Attack Configuration", meta=(AllowPrivateAccess = "true"))
+	float MaxAttackInterval = 1.f;
+
 	TObjectPtr<AGFTInvaderManager> InvaderManager;
 };

@@ -18,11 +18,14 @@ public:
 	AGFTBunker();
 
 protected:
-	virtual void TakeDamage();
+	virtual void HandleHit();
 
 private:
 	// React to a ball impact
 	virtual void BallImpact_Implementation() override;
+
+	// React to a projectile impact
+	virtual void ProjectileImpact_Implementation() override;
 
 	// Box used as RootComponent and for collision
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=GFT, meta=(AllowPrivateAccess = "true"))

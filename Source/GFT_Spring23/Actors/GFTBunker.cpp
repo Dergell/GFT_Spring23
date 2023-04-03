@@ -21,7 +21,7 @@ AGFTBunker::AGFTBunker()
 	Mesh->SetGenerateOverlapEvents(false);
 }
 
-void AGFTBunker::TakeDamage()
+void AGFTBunker::HandleHit()
 {
 	SetActorScale3D(GetActorScale3D() - DamageScalar);
 
@@ -33,5 +33,10 @@ void AGFTBunker::TakeDamage()
 
 void AGFTBunker::BallImpact_Implementation()
 {
-	TakeDamage();
+	HandleHit();
+}
+
+void AGFTBunker::ProjectileImpact_Implementation()
+{
+	HandleHit();
 }

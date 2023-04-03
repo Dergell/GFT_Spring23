@@ -8,8 +8,21 @@
 
 class AGFTInvader;
 
+USTRUCT()
+struct FInvaderConfiguration
+{
+	GENERATED_BODY()
+
+	float MovementRate = 1.f;
+	float FinalMovementRate = 0.1f;
+	float MinAttackInterval = 1.f;
+	float MaxAttackInterval = 1.f;
+};
+
 /*
- * This class will manage movement for all invaders in the level
+ * This class will manage all invaders in the level. It will move them and tell them when to shoot.
+ * It should be spawned and initialized by the GameMode, which is why configuration will happen in a GameMode blueprint.
+ * All it does could be implemented directly in the GameMode, but like this it's more obvious what it does.
  */
 UCLASS(NotBlueprintable)
 class GFT_SPRING23_API AGFTInvaderManager : public AActor
@@ -24,7 +37,7 @@ protected:
 
 public:
 	// Set some values from outside and start timer
-	void Initialize(float InMovementRate, float InFinalMovementRate);
+	void Initialize(FInvaderConfiguration InvaderConfig);
 
 private:
 	// Callback whenever an invader overlaps something
@@ -43,6 +56,9 @@ private:
 	UFUNCTION()
 	void PerformMove();
 
+	// Callback for AttackTimer
+	void PerformAttack();
+
 	// Keep a list of all invaders in the level
 	TArray<AGFTInvader*> InvaderList;
 
@@ -58,6 +74,15 @@ private:
 	UPROPERTY(VisibleInstanceOnly)
 	bool bShouldMoveDown = true;
 
+	// Internal values used for attack calculations
+	UPROPERTY(VisibleInstanceOnly)
+	float MinAttackInterval = 1.f;
+	UPROPERTY(VisibleInstanceOnly)
+	float MaxAttackInterval = 1.f;
+
 	// Timer to handle repeated movement
 	FTimerHandle MovementTimer;
+
+	// Timer to handle repeated attacks
+	FTimerHandle AttackTimer;
 };

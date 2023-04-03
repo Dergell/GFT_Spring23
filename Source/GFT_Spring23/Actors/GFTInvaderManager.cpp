@@ -28,13 +28,18 @@ void AGFTInvaderManager::BeginPlay()
 	}
 }
 
-void AGFTInvaderManager::Initialize(float InMovementRate, float InFinalMovementRate)
+void AGFTInvaderManager::Initialize(FInvaderConfiguration InvaderConfig)
 {
-	MovementRate = InMovementRate;
-	FinalMovementRate = InFinalMovementRate;
+	MovementRate = InvaderConfig.MovementRate;
+	FinalMovementRate = InvaderConfig.FinalMovementRate;
+	MinAttackInterval = InvaderConfig.MinAttackInterval;
+	MaxAttackInterval = InvaderConfig.MaxAttackInterval;
 	MovementVector = FVector(100, 0, 0);
 
 	GetWorld()->GetTimerManager().SetTimer(MovementTimer, this, &AGFTInvaderManager::PerformMove, MovementRate);
+
+	const float Interval = FMath::FRandRange(MinAttackInterval, MaxAttackInterval);
+	GetWorld()->GetTimerManager().SetTimer(AttackTimer, this, &AGFTInvaderManager::PerformAttack, Interval);
 }
 
 void AGFTInvaderManager::OnInvaderBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
@@ -108,4 +113,25 @@ void AGFTInvaderManager::PerformMove()
 
 	// Set new timer for next movement here instead of looping, since MovementRate can change at any time
 	GetWorld()->GetTimerManager().SetTimer(MovementTimer, this, &AGFTInvaderManager::PerformMove, MovementRate);
+}
+
+void AGFTInvaderManager::PerformAttack()
+{
+	// First we need to collect all invaders that have a clear shot
+	TArray<AGFTInvader*> ReadyInvaders;
+	for (AGFTInvader* Invader : InvaderList)
+	{
+		if (Invader->HasClearShot())
+		{
+			ReadyInvaders.Add(Invader);
+		}
+	}
+
+	// Then we'll choose one of them for the attack
+	const int32 Index = FMath::RandRange(0, ReadyInvaders.Num() - 1);
+	ReadyInvaders[Index]->Shoot();
+
+	// Finally we start the timer again
+	const float Interval = FMath::FRandRange(MinAttackInterval, MaxAttackInterval);
+	GetWorld()->GetTimerManager().SetTimer(AttackTimer, this, &AGFTInvaderManager::PerformAttack, Interval);
 }

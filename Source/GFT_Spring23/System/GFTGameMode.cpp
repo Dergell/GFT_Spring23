@@ -48,7 +48,13 @@ void AGFTGameMode::BeginPlay()
 	Super::BeginPlay();
 
 	InvaderManager = GetWorld()->SpawnActor<AGFTInvaderManager>(AGFTInvaderManager::StaticClass());
-	InvaderManager->Initialize(MovementRate, FinalMovementRate);
+
+	FInvaderConfiguration InvaderConfig;
+	InvaderConfig.MovementRate = MovementRate;
+	InvaderConfig.FinalMovementRate = FinalMovementRate;
+	InvaderConfig.MinAttackInterval = MinAttackInterval;
+	InvaderConfig.MaxAttackInterval = MaxAttackInterval;
+	InvaderManager->Initialize(InvaderConfig);
 
 	TArray<AActor*> GameSpaces;
 	UGameplayStatics::GetAllActorsWithTag(this, TEXT("GameSpace"), GameSpaces);
