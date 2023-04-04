@@ -63,9 +63,16 @@ void AGFTGameMode::BeginPlay()
 	InvaderConfig.MinAttackInterval = MinAttackInterval;
 	InvaderConfig.MaxAttackInterval = MaxAttackInterval;
 	InvaderManager->Initialize(InvaderConfig);
+
+	InvaderManager->OnStageClear.AddDynamic(this, &AGFTGameMode::StageClear);
 }
 
 void AGFTGameMode::GameOver()
 {
 	GetGameInstance<UGFTGameInstance>()->LoadMenuLevel();
+}
+
+void AGFTGameMode::StageClear()
+{
+	GetGameInstance<UGFTGameInstance>()->AdvanceStage();
 }

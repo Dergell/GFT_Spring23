@@ -36,6 +36,10 @@ protected:
 	UFUNCTION()
 	void GameOver();
 
+	// Callback when all invaders have been destroyed
+	UFUNCTION()
+	void StageClear();
+
 	// Blueprint class to use when spawning a Ball
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="GFT|Ball Configuration")
 	TSubclassOf<AGFTBall> BallClass;

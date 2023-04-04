@@ -4,6 +4,7 @@
 #include "GFTInvaderManager.h"
 
 #include "GFTInvader.h"
+#include "GFT_Spring23/System/GFTGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 
 AGFTInvaderManager::AGFTInvaderManager()
@@ -26,6 +27,8 @@ void AGFTInvaderManager::BeginPlay()
 		Invader->OnActorEndOverlap.AddDynamic(this, &AGFTInvaderManager::OnInvaderEndOverlap);
 		Invader->OnDestroyed.AddDynamic(this, &AGFTInvaderManager::OnInvaderDestroyed);
 	}
+
+	GetWorld()->OnWorldBeginPlay.AddUObject(this, &AGFTInvaderManager::WorldBeginPlay);
 }
 
 void AGFTInvaderManager::Initialize(FInvaderConfiguration InvaderConfig)
@@ -40,6 +43,23 @@ void AGFTInvaderManager::Initialize(FInvaderConfiguration InvaderConfig)
 
 	const float Interval = FMath::FRandRange(MinAttackInterval, MaxAttackInterval);
 	GetWorld()->GetTimerManager().SetTimer(AttackTimer, this, &AGFTInvaderManager::PerformAttack, Interval);
+}
+
+/**
+ * OnWorldBeginPlay triggers after all other BeginPlay methods. We need to do these movements here,
+ * because in BeginPlay the overlaps that change bShouldMoveDown would not trigger
+ */
+void AGFTInvaderManager::WorldBeginPlay()
+{
+	int32 Stage = GetGameInstance<UGFTGameInstance>()->GetStage();
+	while (Stage > 1 && bShouldMoveDown)
+	{
+		for (AGFTInvader* Invader : InvaderList)
+		{
+			Invader->SetActorLocation(Invader->GetActorLocation() + FVector(0, 0, -100));
+		}
+		Stage--;
+	}
 }
 
 void AGFTInvaderManager::OnInvaderBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
@@ -82,6 +102,12 @@ void AGFTInvaderManager::OnInvaderDestroyed(AActor* DestroyedActor)
 
 	AGFTInvader* Invader = Cast<AGFTInvader>(DestroyedActor);
 	InvaderList.Remove(Invader);
+
+	if (InvaderList.IsEmpty())
+	{
+		OnStageClear.Broadcast();
+		GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
+	}
 }
 
 void AGFTInvaderManager::PerformMove()

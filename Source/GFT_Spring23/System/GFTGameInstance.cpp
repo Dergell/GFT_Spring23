@@ -38,6 +38,17 @@ void UGFTGameInstance::LoadMenuLevel()
 	}
 }
 
+int32 UGFTGameInstance::GetStage() const
+{
+	return Stage;
+}
+
+void UGFTGameInstance::AdvanceStage()
+{
+	Stage += 1;
+	Play();
+}
+
 void UGFTGameInstance::Quit()
 {
 	// Seems like this is how to do it, according to UKismetSystemLibrary::QuitGame

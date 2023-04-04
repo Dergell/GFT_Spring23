@@ -8,6 +8,8 @@
 
 class AGFTInvader;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStageClear);
+
 USTRUCT()
 struct FInvaderConfiguration
 {
@@ -39,6 +41,14 @@ public:
 	// Set some values from outside and start timer
 	void Initialize(FInvaderConfiguration InvaderConfig);
 
+	// Will fire once all Invaders have been destroyed
+	UPROPERTY()
+	FOnStageClear OnStageClear;
+
+protected:
+	// Callback for BeginPlay, will trigger after other BeginPlays 
+	void WorldBeginPlay();
+	
 private:
 	// Callback whenever an invader overlaps something
 	UFUNCTION()

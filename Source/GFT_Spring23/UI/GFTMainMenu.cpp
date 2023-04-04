@@ -59,8 +59,11 @@ void UGFTMainMenu::Shutdown()
 	this->RemoveFromParent();
 
 	APlayerController* PlayerController = GetWorld()->GetFirstPlayerController();
-	PlayerController->SetInputMode(FInputModeGameOnly());
-	PlayerController->bShowMouseCursor = false;
+	if (PlayerController != nullptr)
+	{
+		PlayerController->SetInputMode(FInputModeGameOnly());
+		PlayerController->bShowMouseCursor = false;
+	}
 }
 
 void UGFTMainMenu::OnPlay()

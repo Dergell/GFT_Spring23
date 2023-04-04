@@ -26,6 +26,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void LoadMenuLevel();
 
+	// Get current Stage
+	int32 GetStage() const;
+
+	// Advance Stage
+	void AdvanceStage();
+
 protected:
 	// Quit the game
 	virtual void Quit() override;
@@ -34,18 +40,22 @@ protected:
 	virtual void Play() override;
 
 	// Blueprint widget used as main menu
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=GFT)
 	TSubclassOf<UUserWidget> MainMenuClass;
 
 	// Level to be loaded on play
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=GFT)
 	TSoftObjectPtr<UWorld> MainLevel;
 
 	// Level to be loaded on game over
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=GFT)
 	TSoftObjectPtr<UWorld> MenuLevel;
 
 private:
 	// Remember the main menu, so we can shut it down later 
 	TObjectPtr<UGFTMainMenu> MainMenu;
+
+	// The stage increases everytime the level is cleared
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=GFT, meta=(AllowPrivateAccess = "true"))
+	int32 Stage = 1;
 };
