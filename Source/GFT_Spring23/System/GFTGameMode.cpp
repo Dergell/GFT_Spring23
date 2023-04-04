@@ -6,7 +6,9 @@
 #include "GFTGameInstance.h"
 #include "GFTPlayerController.h"
 #include "GFT_Spring23/Actors/GFTBall.h"
+#include "GFT_Spring23/Actors/GFTInvader.h"
 #include "GFT_Spring23/Actors/GFTInvaderManager.h"
+#include "Kismet/GameplayStatics.h"
 
 void AGFTGameMode::PostLogin(APlayerController* NewPlayer)
 {
@@ -55,16 +57,27 @@ void AGFTGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
+	GetWorld()->OnWorldBeginPlay.AddUObject(this, &AGFTGameMode::WorldBeginPlay);
+
 	InvaderManager = GetWorld()->SpawnActor<AGFTInvaderManager>(AGFTInvaderManager::StaticClass());
-
-	FInvaderConfiguration InvaderConfig;
-	InvaderConfig.MovementRate = MovementRate;
-	InvaderConfig.FinalMovementRate = FinalMovementRate;
-	InvaderConfig.MinAttackInterval = MinAttackInterval;
-	InvaderConfig.MaxAttackInterval = MaxAttackInterval;
-	InvaderManager->Initialize(InvaderConfig);
-
 	InvaderManager->OnStageClear.AddDynamic(this, &AGFTGameMode::StageClear);
+}
+
+/**
+ * OnWorldBeginPlay triggers after all other BeginPlay methods. We need to do this here,
+ * because in SetupInvaders we initialize the InvaderManager, which will move actors and depends
+ * on the overlap triggers that don't trigger during normal BeginPlay. 
+ */
+void AGFTGameMode::WorldBeginPlay()
+{
+	SetupInvaders();
+
+	TArray<AActor*> Invaders;
+	UGameplayStatics::GetAllActorsOfClass(this, AGFTInvader::StaticClass(), Invaders);
+	for (AActor* Invader : Invaders)
+	{
+		InvaderCache.Add(Invader->GetClass(), Invader->GetActorLocation());
+	}
 }
 
 void AGFTGameMode::GameOver()
@@ -75,4 +88,22 @@ void AGFTGameMode::GameOver()
 void AGFTGameMode::StageClear()
 {
 	GetGameInstance<UGFTGameInstance>()->AdvanceStage();
+	SetupInvaders();
+}
+
+void AGFTGameMode::SetupInvaders()
+{
+	// Spawn the cached invaders. Will be empty on first run.
+	for (auto Invader : InvaderCache)
+	{
+		GetWorld()->SpawnActor<AGFTInvader>(Invader.Key, Invader.Value, FRotator::ZeroRotator);
+	}
+
+	// Initialize the InvaderManager
+	FInvaderConfiguration InvaderConfig;
+	InvaderConfig.MovementRate = MovementRate;
+	InvaderConfig.FinalMovementRate = FinalMovementRate;
+	InvaderConfig.MinAttackInterval = MinAttackInterval;
+	InvaderConfig.MaxAttackInterval = MaxAttackInterval;
+	InvaderManager->Initialize(InvaderConfig);
 }

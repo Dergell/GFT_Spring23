@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "GFTGameMode.generated.h"
 
+class AGFTInvader;
 class AGFTInvaderManager;
 class AGFTBall;
 
@@ -32,6 +33,9 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	// Callback for OnWorldBeginPlay, will trigger after other BeginPlays 
+	void WorldBeginPlay();
+
 	// Callback when the player lost all lives
 	UFUNCTION()
 	void GameOver();
@@ -40,6 +44,11 @@ protected:
 	UFUNCTION()
 	void StageClear();
 
+private:
+	// Spawn cached invaders and start up InvaderManager
+	void SetupInvaders();
+
+protected:
 	// Blueprint class to use when spawning a Ball
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="GFT|Ball Configuration")
 	TSubclassOf<AGFTBall> BallClass;
@@ -70,4 +79,5 @@ private:
 	float MaxAttackInterval = 1.f;
 
 	TObjectPtr<AGFTInvaderManager> InvaderManager;
+	TMultiMap<TSubclassOf<AGFTInvader>, FVector> InvaderCache;
 };

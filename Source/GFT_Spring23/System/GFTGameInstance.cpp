@@ -46,7 +46,6 @@ int32 UGFTGameInstance::GetStage() const
 void UGFTGameInstance::AdvanceStage()
 {
 	Stage += 1;
-	Play();
 }
 
 void UGFTGameInstance::Quit()

@@ -13,10 +13,9 @@ AGFTInvaderManager::AGFTInvaderManager()
 	PrimaryActorTick.bCanEverTick = false;
 }
 
-void AGFTInvaderManager::BeginPlay()
+void AGFTInvaderManager::Initialize(FInvaderConfiguration InvaderConfig)
 {
-	Super::BeginPlay();
-
+	// First, collect all invaders in the level and add some delegates
 	TArray<AActor*> Invaders;
 	UGameplayStatics::GetAllActorsOfClass(this, AGFTInvader::StaticClass(), Invaders);
 	for (AActor* InvaderActor : Invaders)
@@ -28,29 +27,16 @@ void AGFTInvaderManager::BeginPlay()
 		Invader->OnDestroyed.AddDynamic(this, &AGFTInvaderManager::OnInvaderDestroyed);
 	}
 
-	GetWorld()->OnWorldBeginPlay.AddUObject(this, &AGFTInvaderManager::WorldBeginPlay);
-}
-
-void AGFTInvaderManager::Initialize(FInvaderConfiguration InvaderConfig)
-{
+	// Then setup some basic states
 	MovementRate = InvaderConfig.MovementRate;
 	FinalMovementRate = InvaderConfig.FinalMovementRate;
 	MinAttackInterval = InvaderConfig.MinAttackInterval;
 	MaxAttackInterval = InvaderConfig.MaxAttackInterval;
+	bWasReverted = false;
+	bShouldMoveDown = true;
 	MovementVector = FVector(100, 0, 0);
 
-	GetWorld()->GetTimerManager().SetTimer(MovementTimer, this, &AGFTInvaderManager::PerformMove, MovementRate);
-
-	const float Interval = FMath::FRandRange(MinAttackInterval, MaxAttackInterval);
-	GetWorld()->GetTimerManager().SetTimer(AttackTimer, this, &AGFTInvaderManager::PerformAttack, Interval);
-}
-
-/**
- * OnWorldBeginPlay triggers after all other BeginPlay methods. We need to do these movements here,
- * because in BeginPlay the overlaps that change bShouldMoveDown would not trigger
- */
-void AGFTInvaderManager::WorldBeginPlay()
-{
+	// Now move the invaders down according to the current stage
 	int32 Stage = GetGameInstance<UGFTGameInstance>()->GetStage();
 	while (Stage > 1 && bShouldMoveDown)
 	{
@@ -60,6 +46,11 @@ void AGFTInvaderManager::WorldBeginPlay()
 		}
 		Stage--;
 	}
+
+	// Lastly, activate the timers
+	const float Interval = FMath::FRandRange(MinAttackInterval, MaxAttackInterval);
+	GetWorldTimerManager().SetTimer(AttackTimer, this, &AGFTInvaderManager::PerformAttack, Interval);
+	GetWorldTimerManager().SetTimer(MovementTimer, this, &AGFTInvaderManager::PerformMove, MovementRate);
 }
 
 void AGFTInvaderManager::OnInvaderBeginOverlap(AActor* OverlappedActor, AActor* OtherActor)
@@ -105,8 +96,9 @@ void AGFTInvaderManager::OnInvaderDestroyed(AActor* DestroyedActor)
 
 	if (InvaderList.IsEmpty())
 	{
+		GetWorldTimerManager().ClearTimer(AttackTimer);
+		GetWorldTimerManager().ClearTimer(MovementTimer);
 		OnStageClear.Broadcast();
-		GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
 	}
 }
 
@@ -138,7 +130,7 @@ void AGFTInvaderManager::PerformMove()
 	bWasReverted = false;
 
 	// Set new timer for next movement here instead of looping, since MovementRate can change at any time
-	GetWorld()->GetTimerManager().SetTimer(MovementTimer, this, &AGFTInvaderManager::PerformMove, MovementRate);
+	GetWorldTimerManager().SetTimer(MovementTimer, this, &AGFTInvaderManager::PerformMove, MovementRate);
 }
 
 void AGFTInvaderManager::PerformAttack()
@@ -159,5 +151,5 @@ void AGFTInvaderManager::PerformAttack()
 
 	// Finally we start the timer again
 	const float Interval = FMath::FRandRange(MinAttackInterval, MaxAttackInterval);
-	GetWorld()->GetTimerManager().SetTimer(AttackTimer, this, &AGFTInvaderManager::PerformAttack, Interval);
+	GetWorldTimerManager().SetTimer(AttackTimer, this, &AGFTInvaderManager::PerformAttack, Interval);
 }

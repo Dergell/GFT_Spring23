@@ -34,10 +34,6 @@ class GFT_SPRING23_API AGFTInvaderManager : public AActor
 public:
 	AGFTInvaderManager();
 
-protected:
-	virtual void BeginPlay() override;
-
-public:
 	// Set some values from outside and start timer
 	void Initialize(FInvaderConfiguration InvaderConfig);
 
@@ -45,10 +41,6 @@ public:
 	UPROPERTY()
 	FOnStageClear OnStageClear;
 
-protected:
-	// Callback for BeginPlay, will trigger after other BeginPlays 
-	void WorldBeginPlay();
-	
 private:
 	// Callback whenever an invader overlaps something
 	UFUNCTION()
