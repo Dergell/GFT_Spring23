@@ -7,6 +7,8 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GFT_Spring23/Interfaces/GFTGameFramework.h"
 #include "GFT_Spring23/Interfaces/GFTImpactable.h"
+#include "GFT_Spring23/System/GFTGameMode.h"
+#include "Kismet/GameplayStatics.h"
 
 AGFTBall::AGFTBall()
 {
@@ -56,6 +58,12 @@ void AGFTBall::OnEndOverlap(AActor* OverlappedActor, AActor* OtherActor)
 		if (Controller != nullptr && Controller->Implements<UGFTGameFramework>())
 		{
 			IGFTGameFramework::Execute_BallLost(Controller);
+		}
+
+		AGFTGameMode* GameMode = Cast<AGFTGameMode>(UGameplayStatics::GetGameMode(this));
+		if (GameMode != nullptr)
+		{
+			GameMode->RemoveActiveBall();
 		}
 
 		Destroy();

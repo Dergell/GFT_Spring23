@@ -26,6 +26,9 @@ public:
 	// Adds one to ActiveBalls
 	void AddActiveBall();
 
+	// Removes one from ActiveBalls
+	void RemoveActiveBall();
+
 protected:
 	virtual void BeginPlay() override;
 

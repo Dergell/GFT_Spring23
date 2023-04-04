@@ -7,8 +7,6 @@
 #include "GFTPlayerController.h"
 #include "GFT_Spring23/Actors/GFTBall.h"
 #include "GFT_Spring23/Actors/GFTInvaderManager.h"
-#include "GFT_Spring23/Interfaces/GFTGameFramework.h"
-#include "Kismet/GameplayStatics.h"
 
 void AGFTGameMode::PostLogin(APlayerController* NewPlayer)
 {
@@ -35,6 +33,11 @@ bool AGFTGameMode::IsBallReady()
 void AGFTGameMode::AddActiveBall()
 {
 	ActiveBalls++;
+}
+
+void AGFTGameMode::RemoveActiveBall()
+{
+	ActiveBalls--;
 }
 
 TSubclassOf<AGFTBall> AGFTGameMode::GetBallClass() const
