@@ -5,9 +5,12 @@
 
 #include "GFTGameInstance.h"
 #include "GFTPlayerController.h"
+#include "Components/SplineMeshComponent.h"
+#include "Engine/SplineMeshActor.h"
 #include "GFT_Spring23/Actors/GFTBall.h"
 #include "GFT_Spring23/Actors/GFTInvader.h"
 #include "GFT_Spring23/Actors/GFTInvaderManager.h"
+#include "GFT_Spring23/Actors/GFTMothership.h"
 #include "Kismet/GameplayStatics.h"
 
 void AGFTGameMode::PostLogin(APlayerController* NewPlayer)
@@ -106,4 +109,33 @@ void AGFTGameMode::SetupInvaders()
 	InvaderConfig.MinAttackInterval = MinAttackInterval;
 	InvaderConfig.MaxAttackInterval = MaxAttackInterval;
 	InvaderManager->Initialize(InvaderConfig);
+
+	// Set new timer for mothership
+	const float Interval = FMath::FRandRange(MinMothershipInterval, MaxMothershipInterval);
+	GetWorldTimerManager().SetTimer(MothershipTimer, this, &AGFTGameMode::SpawnMothership, Interval);
+}
+
+void AGFTGameMode::SpawnMothership()
+{
+	if (MothershipClass == nullptr)
+	{
+		UE_LOG(LogClass, Warning, TEXT("MothershipClass in GameMode not set, cannot spawn mothership."));
+		return;
+	}
+
+	// Find the spawn point marked by an empty actor
+	TArray<AActor*> Actors;
+	UGameplayStatics::GetAllActorsWithTag(this, TEXT("MothershipSpawn"), Actors);
+	if (Actors.IsEmpty())
+	{
+		UE_LOG(LogClass, Warning, TEXT("Could not find actor with tag 'MothershipSpawn', cannot spawn mothership."));
+		return;
+	}
+
+	// Spawn the mothership
+	GetWorld()->SpawnActor<AGFTMothership>(MothershipClass, Actors.Top()->GetActorLocation(), FRotator::ZeroRotator);
+
+	// Set a new timer for the next mothership
+	const float Interval = FMath::FRandRange(MinMothershipInterval, MaxMothershipInterval);
+	GetWorldTimerManager().SetTimer(MothershipTimer, this, &AGFTGameMode::SpawnMothership, Interval);
 }

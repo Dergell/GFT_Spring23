@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "GFTGameMode.generated.h"
 
+class AGFTMothership;
 class AGFTInvader;
 class AGFTInvaderManager;
 class AGFTBall;
@@ -48,6 +49,9 @@ private:
 	// Spawn cached invaders and start up InvaderManager
 	void SetupInvaders();
 
+	// Spawn a new mothership
+	void SpawnMothership();
+
 protected:
 	// Blueprint class to use when spawning a Ball
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="GFT|Ball Configuration")
@@ -77,6 +81,19 @@ private:
 	// The maximum time in seconds until the next attack
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="GFT|Attack Configuration", meta=(AllowPrivateAccess = "true"))
 	float MaxAttackInterval = 1.f;
+
+	// Class or blueprint used as mothership
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="GFT|Mothership Configuration", meta=(AllowPrivateAccess = "true"))
+	TSubclassOf<AGFTMothership> MothershipClass;
+
+	// Min and max interval to spawn a new mothership
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="GFT|Mothership Configuration", meta=(AllowPrivateAccess = "true"))
+	float MinMothershipInterval = 10.f;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="GFT|Mothership Configuration", meta=(AllowPrivateAccess = "true"))
+	float MaxMothershipInterval = 100.f;
+
+	// Timer used to wait for next mothership spawn
+	FTimerHandle MothershipTimer;
 
 	TObjectPtr<AGFTInvaderManager> InvaderManager;
 	TMultiMap<TSubclassOf<AGFTInvader>, FVector> InvaderCache;
