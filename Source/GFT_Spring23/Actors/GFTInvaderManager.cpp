@@ -3,6 +3,7 @@
 
 #include "GFTInvaderManager.h"
 
+#include "GFTBall.h"
 #include "GFTInvader.h"
 #include "GFT_Spring23/System/GFTGameInstance.h"
 #include "Kismet/GameplayStatics.h"
@@ -109,21 +110,39 @@ void AGFTInvaderManager::PerformMove()
 	// Reset Z movement, only required once
 	MovementVector.Z = 0;
 
-	for (AGFTInvader* Invader : InvaderList)
+	// Do a reverse for loop, since Invaders might get destroyed during iteration
+	for (int Index = InvaderList.Num() - 1; Index >= 0; --Index)
 	{
-		FVector Location = Invader->GetActorLocation();
+		AGFTInvader* Invader = InvaderList[Index];
+		if (!IsValid(Invader))
+		{
+			continue;
+		}
+
+		FVector StartLocation = Invader->GetActorLocation();
+		FVector EndLocation = StartLocation;
 
 		// Z movement has priority, only do X movement if no Z movement is required
 		if (CurrentVector.Z != 0)
 		{
-			Location.Z += CurrentVector.Z;
+			EndLocation.Z += CurrentVector.Z;
 		}
 		else
 		{
-			Location.X += CurrentVector.X;
+			EndLocation.X += CurrentVector.X;
 		}
 
-		Invader->SetActorLocation(Location);
+		// Sweeptest for the ball, so we don't just move over and block it without a hit
+		FCollisionShape Shape = FCollisionShape::MakeBox(Invader->GetComponentsBoundingBox().GetExtent());
+		const bool Hit = GetWorld()->SweepTestByChannel(StartLocation, EndLocation, Invader->GetActorQuat(), ECC_GameTraceChannel1, Shape);
+		if (Hit)
+		{
+			IGFTImpactable::Execute_BallImpact(Invader);
+		}
+		else
+		{
+			Invader->SetActorLocation(EndLocation);
+		}
 	}
 
 	// Reset flag after each full cycle
