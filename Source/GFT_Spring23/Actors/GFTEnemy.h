@@ -23,6 +23,9 @@ public:
 	AGFTEnemy();
 
 protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
 	// Callback whenever we end an overlap
 	UFUNCTION()
 	void EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);

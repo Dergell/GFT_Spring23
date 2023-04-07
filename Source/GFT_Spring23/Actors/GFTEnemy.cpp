@@ -24,6 +24,13 @@ AGFTEnemy::AGFTEnemy()
 	Mesh->SetGenerateOverlapEvents(false);
 }
 
+void AGFTEnemy::BeginPlay()
+{
+	Super::BeginPlay();
+
+	Collision->OnComponentEndOverlap.AddDynamic(this, &AGFTEnemy::EndOverlap);
+}
+
 void AGFTEnemy::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
 	if (OtherActor->ActorHasTag(TEXT("GameSpace")))
