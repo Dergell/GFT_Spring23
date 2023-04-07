@@ -3,16 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
-#include "GFT_Spring23/Interfaces/GFTImpactable.h"
+#include "GFTEnemy.h"
 #include "GFTInvader.generated.h"
 
 class UArrowComponent;
 class AGFTProjectile;
-class UBoxComponent;
 
-UCLASS()
-class GFT_SPRING23_API AGFTInvader : public AActor, public IGFTImpactable
+/**
+ * Class represents an individual invader, moving with other invaders towards the player, occasionally shooting.
+ * Movement and spawning is handled by GFTInvaderManager.
+ */
+UCLASS(Blueprintable)
+class GFT_SPRING23_API AGFTInvader : public AGFTEnemy
 {
 	GENERATED_BODY()
 
@@ -26,24 +28,9 @@ public:
 	void Shoot();
 
 private:
-	// React to a ball impact
-	virtual void BallImpact_Implementation() override;
-
-	// Box used as RootComponent and for collision
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=GFT, meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UBoxComponent> Collision;
-
-	// Mesh with disabled collision
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=GFT, meta=(AllowPrivateAccess = "true"))
-	TObjectPtr<UStaticMeshComponent> Mesh;
-
 	// Arrow used as starting position of projectiles
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=GFT, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<UArrowComponent> Muzzle;
-
-	// How many points this invader is worth once destroyed
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=GFT, meta=(AllowPrivateAccess = "true"))
-	int32 Points = 100;
 
 	// Blueprint class to use when spawning a Ball
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=GFT, meta=(AllowPrivateAccess = "true"))
