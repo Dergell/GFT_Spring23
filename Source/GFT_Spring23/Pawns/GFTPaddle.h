@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
+#include "GFT_Spring23/Interfaces/GFTImpactable.h"
 #include "GFTPaddle.generated.h"
 
 class UArrowComponent;
@@ -18,7 +19,7 @@ struct FInputActionInstance;
  * Paddle representing the player, used the shoot and bounce back balls.
  */
 UCLASS()
-class GFT_SPRING23_API AGFTPaddle : public APawn
+class GFT_SPRING23_API AGFTPaddle : public APawn, public IGFTImpactable
 {
 	GENERATED_BODY()
 
@@ -34,6 +35,9 @@ public:
 	void FireBall();
 
 private:
+	// Handle getting shot by an invader
+	virtual void ProjectileImpact_Implementation() override;
+	
 	// Used as RootComponent
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=GFT, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<USceneComponent> SceneRoot;

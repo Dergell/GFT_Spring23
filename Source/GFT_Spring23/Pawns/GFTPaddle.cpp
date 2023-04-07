@@ -11,6 +11,7 @@
 #include "Components/SplineComponent.h"
 #include "GFT_Spring23/Actors/GFTBall.h"
 #include "GFT_Spring23/Input/GFTInputConfig.h"
+#include "GFT_Spring23/Interfaces/GFTGameFramework.h"
 #include "GFT_Spring23/System/GFTGameMode.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -82,5 +83,13 @@ void AGFTPaddle::FireBall()
 		Params.Instigator = this;
 		GetWorld()->SpawnActor<AGFTBall>(GameMode->GetBallClass(), BallSpawnArrow->GetComponentTransform(), Params);
 		GameMode->AddActiveBall();
+	}
+}
+
+void AGFTPaddle::ProjectileImpact_Implementation()
+{
+	if (Controller != nullptr && Controller->Implements<UGFTGameFramework>())
+	{
+		IGFTGameFramework::Execute_PaddleLost(Controller);
 	}
 }

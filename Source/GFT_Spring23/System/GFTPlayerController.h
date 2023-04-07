@@ -32,9 +32,13 @@ protected:
 	// Implementations from IGFTGameFramework
 	virtual void ScoreUpdate_Implementation(int32 Points) override;
 	virtual void BallLost_Implementation() override;
+	virtual void PaddleLost_Implementation() override;
 
 private:
-	// Input operatrions
+	// Process losing a live
+	void LoseLive();
+	
+	// Input operations
 	void BindInputActions();
 	void AddInputMapping(const UInputMappingContext* InputMapping);
 	void RemoveInputMapping(const UInputMappingContext* InputMapping);

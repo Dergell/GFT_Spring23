@@ -28,4 +28,8 @@ public:
 	// Executed when a Ball leaves the GameSpace trigger volume
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category=GFT)
 	void BallLost();
+
+	// Executed when the paddle got shot by an invader
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category=GFT)
+	void PaddleLost();
 };

@@ -79,6 +79,21 @@ void AGFTPlayerController::ScoreUpdate_Implementation(int32 Points)
 
 void AGFTPlayerController::BallLost_Implementation()
 {
+	LoseLive();
+}
+
+void AGFTPlayerController::PaddleLost_Implementation()
+{
+	LoseLive();
+	if (GetPawn() != nullptr)
+	{
+		GetPawn()->Destroy();
+	}
+	ServerRestartPlayer();
+}
+
+void AGFTPlayerController::LoseLive()
+{
 	AGFTPlayerState* State = GetPlayerState<AGFTPlayerState>();
 	if (State == nullptr)
 	{
