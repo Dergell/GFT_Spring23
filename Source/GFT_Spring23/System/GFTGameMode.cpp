@@ -7,6 +7,7 @@
 #include "GFTPlayerController.h"
 #include "GFTPlayerState.h"
 #include "GFT_Spring23/Actors/GFTBall.h"
+#include "GFT_Spring23/Actors/GFTBunker.h"
 #include "GFT_Spring23/Actors/GFTInvader.h"
 #include "GFT_Spring23/Actors/GFTInvaderManager.h"
 #include "GFT_Spring23/Actors/GFTMothership.h"
@@ -118,6 +119,14 @@ void AGFTGameMode::SetupInvaders()
 		GetWorld()->SpawnActor<AGFTInvader>(Invader.Key, Invader.Value, FRotator::ZeroRotator);
 	}
 
+	// Reset the size of all bunkers
+	TArray<AActor*> Bunkers;
+	UGameplayStatics::GetAllActorsOfClass(this, AGFTBunker::StaticClass(), Bunkers);
+	for (AActor* Bunker : Bunkers)
+	{
+		Bunker->SetActorScale3D(FVector::OneVector);
+	}
+	
 	// Initialize the InvaderManager
 	FInvaderConfiguration InvaderConfig;
 	InvaderConfig.MovementRate = MovementRate;

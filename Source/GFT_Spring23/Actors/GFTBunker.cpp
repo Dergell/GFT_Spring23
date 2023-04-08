@@ -23,11 +23,9 @@ AGFTBunker::AGFTBunker()
 
 void AGFTBunker::HandleHit()
 {
-	SetActorScale3D(GetActorScale3D() - DamageScalar);
-
-	if (GetActorScale3D().GetMin() <= 0)
+	if (GetActorScale3D().GetMin() >= 0)
 	{
-		Destroy();
+		SetActorScale3D(GetActorScale3D() - DamageScalar);
 	}
 }
 
