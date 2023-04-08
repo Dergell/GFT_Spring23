@@ -5,8 +5,7 @@
 
 #include "GFTGameInstance.h"
 #include "GFTPlayerController.h"
-#include "Components/SplineMeshComponent.h"
-#include "Engine/SplineMeshActor.h"
+#include "GFTPlayerState.h"
 #include "GFT_Spring23/Actors/GFTBall.h"
 #include "GFT_Spring23/Actors/GFTInvader.h"
 #include "GFT_Spring23/Actors/GFTInvaderManager.h"
@@ -83,14 +82,31 @@ void AGFTGameMode::WorldBeginPlay()
 	}
 }
 
-void AGFTGameMode::GameOver()
+void AGFTGameMode::GameOver(AGFTPlayerState* PlayerState)
 {
-	GetGameInstance<UGFTGameInstance>()->LoadMenuLevel();
+	UGFTGameInstance* Instance = GetGameInstance<UGFTGameInstance>();
+	if (Instance == nullptr)
+	{
+		return;
+	}
+
+	if (PlayerState != nullptr)
+	{
+		Instance->UpdateHighscore(PlayerState->GetScore());
+	}
+
+	Instance->LoadMenuLevel();
 }
 
 void AGFTGameMode::StageClear()
 {
-	GetGameInstance<UGFTGameInstance>()->AdvanceStage();
+	UGFTGameInstance* Instance = GetGameInstance<UGFTGameInstance>();
+	if (Instance == nullptr)
+	{
+		return;
+	}
+
+	Instance->AdvanceStage();
 	SetupInvaders();
 }
 

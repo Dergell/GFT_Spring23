@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "GFTGameMode.generated.h"
 
+class AGFTPlayerState;
 class AGFTMothership;
 class AGFTInvader;
 class AGFTInvaderManager;
@@ -39,7 +40,7 @@ protected:
 
 	// Callback when the player lost all lives
 	UFUNCTION()
-	void GameOver();
+	void GameOver(AGFTPlayerState* PlayerState);
 
 	// Callback when all invaders have been destroyed
 	UFUNCTION()

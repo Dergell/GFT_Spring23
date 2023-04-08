@@ -7,6 +7,7 @@
 #include "GFT_Spring23/Interfaces/GFTMainMenuInterface.h"
 #include "GFTGameInstance.generated.h"
 
+class UGFTSaveGame;
 class UGFTMainMenu;
 
 /**
@@ -18,6 +19,10 @@ class GFT_SPRING23_API UGFTGameInstance : public UGameInstance, public IGFTMainM
 	GENERATED_BODY()
 
 public:
+	// Overrides from UGameInstance 
+	virtual void Init() override;
+	virtual void Shutdown() override;
+
 	// This will display the main menu
 	UFUNCTION(BlueprintCallable)
 	void LoadMenu();
@@ -31,6 +36,9 @@ public:
 
 	// Advance Stage
 	void AdvanceStage();
+
+	// Update the Highscore in the SaveGame
+	void UpdateHighscore(float InHighscore);
 
 protected:
 	// Quit the game
@@ -52,8 +60,13 @@ protected:
 	TSoftObjectPtr<UWorld> MenuLevel;
 
 private:
-	// Remember the main menu, so we can shut it down later 
+	// Remember the main menu, so we can shut it down later
+	UPROPERTY()
 	TObjectPtr<UGFTMainMenu> MainMenu;
+
+	// SaveGame object that holds the highscore
+	UPROPERTY()
+	TObjectPtr<UGFTSaveGame> SaveGame;
 
 	// The stage increases everytime the level is cleared
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=GFT, meta=(AllowPrivateAccess = "true"))

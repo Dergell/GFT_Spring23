@@ -3,8 +3,34 @@
 
 #include "GFTGameInstance.h"
 
+#include "GFTSaveGame.h"
 #include "Blueprint/UserWidget.h"
 #include "GFT_Spring23/UI/GFTMainMenu.h"
+#include "Kismet/GameplayStatics.h"
+
+void UGFTGameInstance::Init()
+{
+	Super::Init();
+
+	if (UGameplayStatics::DoesSaveGameExist(TEXT("local"), 0))
+	{
+		SaveGame = Cast<UGFTSaveGame>(UGameplayStatics::LoadGameFromSlot(TEXT("local"), 0));
+	}
+	else
+	{
+		SaveGame = Cast<UGFTSaveGame>(UGameplayStatics::CreateSaveGameObject(UGFTSaveGame::StaticClass()));
+	}
+}
+
+void UGFTGameInstance::Shutdown()
+{
+	if (SaveGame != nullptr)
+	{
+		UGameplayStatics::SaveGameToSlot(SaveGame, TEXT("local"), 0);
+	}
+
+	Super::Shutdown();
+}
 
 void UGFTGameInstance::LoadMenu()
 {
@@ -19,6 +45,11 @@ void UGFTGameInstance::LoadMenu()
 	{
 		MainMenu->Setup();
 		MainMenu->SetInterface(this);
+
+		if (SaveGame != nullptr)
+		{
+			MainMenu->UpdateHighscore(SaveGame->GetHighscore());
+		}
 	}
 }
 
@@ -46,6 +77,14 @@ int32 UGFTGameInstance::GetStage() const
 void UGFTGameInstance::AdvanceStage()
 {
 	Stage += 1;
+}
+
+void UGFTGameInstance::UpdateHighscore(float InHighscore)
+{
+	if (SaveGame != nullptr && SaveGame->GetHighscore() <= InHighscore)
+	{
+		SaveGame->SetHighscore(InHighscore);
+	}
 }
 
 void UGFTGameInstance::Quit()

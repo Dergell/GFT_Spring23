@@ -4,8 +4,8 @@
 #include "GFTMainMenu.h"
 
 #include "Components/Button.h"
+#include "Components/TextBlock.h"
 #include "GFT_Spring23/Interfaces/GFTMainMenuInterface.h"
-#include "Kismet/GameplayStatics.h"
 
 UGFTMainMenu::UGFTMainMenu(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -63,6 +63,14 @@ void UGFTMainMenu::Shutdown()
 	{
 		PlayerController->SetInputMode(FInputModeGameOnly());
 		PlayerController->bShowMouseCursor = false;
+	}
+}
+
+void UGFTMainMenu::UpdateHighscore(float InHighscore)
+{
+	if (TextHighscoreValue != nullptr)
+	{
+		TextHighscoreValue->SetText(FText::AsNumber(InHighscore));
 	}
 }
 

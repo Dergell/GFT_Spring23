@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "GFTMainMenu.generated.h"
 
+class UTextBlock;
 class IGFTMainMenuInterface;
 class UButton;
 
@@ -31,6 +32,9 @@ public:
 	// This will hide it again
 	void Shutdown();
 
+	// Update the Highscore value
+	void UpdateHighscore(float InHighscore);
+
 protected:
 	// Callback for ButtonPlay
 	UFUNCTION()
@@ -47,6 +51,10 @@ protected:
 	// Directly binds to the blueprint button ButtonQuit
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UButton> ButtonQuit;
+
+	// Value of the Highscore text block
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+	TObjectPtr<UTextBlock> TextHighscoreValue;
 
 private:
 	// This will hold the interface used for actions

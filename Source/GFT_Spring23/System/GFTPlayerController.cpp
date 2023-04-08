@@ -103,7 +103,7 @@ void AGFTPlayerController::LoseLive()
 	State->SetLives(State->GetLives() - 1);
 	if (State->GetLives() <= 0)
 	{
-		OnGameOver.Broadcast();
+		OnGameOver.Broadcast(State);
 	}
 
 	if (HudWidget != nullptr)

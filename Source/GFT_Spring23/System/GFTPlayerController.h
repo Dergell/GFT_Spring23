@@ -7,11 +7,12 @@
 #include "GFT_Spring23/Interfaces/GFTGameFramework.h"
 #include "GFTPlayerController.generated.h"
 
+class AGFTPlayerState;
 class UGFTPlayerHud;
 class AGFTPaddle;
 class UInputMappingContext;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameOver);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGameOver, AGFTPlayerState*, PlayerState);
 
 UCLASS()
 class GFT_SPRING23_API AGFTPlayerController : public APlayerController, public IGFTGameFramework
