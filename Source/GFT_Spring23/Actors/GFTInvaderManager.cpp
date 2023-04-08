@@ -21,6 +21,11 @@ void AGFTInvaderManager::Initialize(FInvaderConfiguration InvaderConfig)
 	UGameplayStatics::GetAllActorsOfClass(this, AGFTInvader::StaticClass(), Invaders);
 	for (AActor* InvaderActor : Invaders)
 	{
+		if (!IsValid(InvaderActor))
+		{
+			continue;			
+		}
+		
 		AGFTInvader* Invader = Cast<AGFTInvader>(InvaderActor);
 		InvaderList.Add(Invader);
 		Invader->OnActorBeginOverlap.AddDynamic(this, &AGFTInvaderManager::OnInvaderBeginOverlap);
