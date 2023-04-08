@@ -133,6 +133,7 @@ void AGFTGameMode::SetupInvaders()
 	InvaderConfig.FinalMovementRate = FinalMovementRate;
 	InvaderConfig.MinAttackInterval = MinAttackInterval;
 	InvaderConfig.MaxAttackInterval = MaxAttackInterval;
+	InvaderConfig.MoveSounds = MoveSounds;
 	InvaderManager->Initialize(InvaderConfig);
 
 	// Set new timer for mothership

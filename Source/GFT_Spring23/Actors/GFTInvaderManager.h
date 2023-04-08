@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "GFTInvaderManager.generated.h"
 
+class USoundCue;
 class AGFTInvader;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStageClear);
@@ -19,6 +20,9 @@ struct FInvaderConfiguration
 	float FinalMovementRate = 0.1f;
 	float MinAttackInterval = 1.f;
 	float MaxAttackInterval = 1.f;
+
+	UPROPERTY()
+	TArray<TObjectPtr<USoundBase>> MoveSounds;
 };
 
 /*
@@ -71,6 +75,10 @@ private:
 	float FinalMovementRate = 0.1f;
 	UPROPERTY(VisibleInstanceOnly)
 	FVector MovementVector;
+	UPROPERTY(VisibleInstanceOnly)
+	TArray<TObjectPtr<USoundBase>> MoveSounds;
+	UPROPERTY(VisibleInstanceOnly)
+	int32 MoveSoundIndex = 0;
 	UPROPERTY(VisibleInstanceOnly)
 	bool bWasReverted = false;
 	UPROPERTY(VisibleInstanceOnly)

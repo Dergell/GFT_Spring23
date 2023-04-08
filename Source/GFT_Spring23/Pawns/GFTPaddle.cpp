@@ -88,6 +88,11 @@ void AGFTPaddle::FireBall()
 
 void AGFTPaddle::ProjectileImpact_Implementation()
 {
+	if (ExplosionSound != nullptr)
+	{
+		UGameplayStatics::PlaySound2D(this, ExplosionSound);
+	}
+
 	if (Controller != nullptr && Controller->Implements<UGFTGameFramework>())
 	{
 		IGFTGameFramework::Execute_PaddleLost(Controller);

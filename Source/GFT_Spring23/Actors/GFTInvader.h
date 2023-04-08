@@ -35,4 +35,8 @@ private:
 	// Blueprint class to use when spawning a Ball
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=GFT, meta=(AllowPrivateAccess = "true"))
 	TSubclassOf<AGFTProjectile> ProjectileClass;
+
+	// Sound played when shooting
+	UPROPERTY(EditDefaultsOnly, Category=GFT, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<USoundWave> ShootSound;
 };

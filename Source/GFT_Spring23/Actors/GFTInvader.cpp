@@ -45,5 +45,10 @@ void AGFTInvader::Shoot()
 		return;
 	}
 
+	if (ShootSound != nullptr)
+	{
+		UGameplayStatics::PlaySound2D(this, ShootSound);
+	}
+
 	GetWorld()->SpawnActor<AGFTProjectile>(ProjectileClass, Muzzle->GetComponentLocation(), FRotator::ZeroRotator);
 }

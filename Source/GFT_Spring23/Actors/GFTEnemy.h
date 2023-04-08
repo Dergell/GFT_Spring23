@@ -44,6 +44,10 @@ protected:
 	TObjectPtr<UStaticMeshComponent> Mesh;
 
 private:
+	// Explosion sound file
+	UPROPERTY(EditDefaultsOnly, Category=GFT, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<USoundWave> ExplosionSound;
+	
 	// How many points this enemy is worth once destroyed
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=GFT, meta=(AllowPrivateAccess = "true"))
 	int32 Points = 100;

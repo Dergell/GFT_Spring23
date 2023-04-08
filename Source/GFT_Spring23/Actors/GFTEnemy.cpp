@@ -41,6 +41,11 @@ void AGFTEnemy::EndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 
 void AGFTEnemy::BallImpact_Implementation()
 {
+	if (ExplosionSound != nullptr)
+	{
+		UGameplayStatics::PlaySound2D(this, ExplosionSound);
+	}
+	
 	Destroy();
 
 	APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);

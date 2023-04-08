@@ -11,6 +11,16 @@ AGFTMothership::AGFTMothership()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
+void AGFTMothership::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (StartSound != nullptr)
+	{
+		UGameplayStatics::PlaySound2D(this, StartSound);
+	}
+}
+
 void AGFTMothership::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);

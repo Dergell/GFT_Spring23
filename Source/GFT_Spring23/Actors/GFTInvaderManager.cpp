@@ -38,6 +38,7 @@ void AGFTInvaderManager::Initialize(FInvaderConfiguration InvaderConfig)
 	FinalMovementRate = InvaderConfig.FinalMovementRate;
 	MinAttackInterval = InvaderConfig.MinAttackInterval;
 	MaxAttackInterval = InvaderConfig.MaxAttackInterval;
+	MoveSounds = InvaderConfig.MoveSounds;
 	bWasReverted = false;
 	bShouldMoveDown = true;
 	MovementVector = FVector(100, 0, 0);
@@ -150,6 +151,16 @@ void AGFTInvaderManager::PerformMove()
 		}
 	}
 
+	if (!MoveSounds.IsEmpty())
+	{
+		UGameplayStatics::PlaySound2D(this, MoveSounds[MoveSoundIndex]);
+		MoveSoundIndex++;
+		if (MoveSoundIndex >= MoveSounds.Num())
+		{
+			MoveSoundIndex = 0;
+		}
+	}
+	
 	// Reset flag after each full cycle
 	bWasReverted = false;
 

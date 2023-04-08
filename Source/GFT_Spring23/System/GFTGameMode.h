@@ -68,12 +68,16 @@ private:
 	int32 MaxBalls = 1;
 
 	// The rate in seconds when movement should be performed
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="GFT|Invader Movement", meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="GFT|Invader Configuration", meta=(AllowPrivateAccess = "true"))
 	float MovementRate = 1.f;
 
 	// The final movement rate at which the last remaining invader will move
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="GFT|Invader Movement", meta=(AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="GFT|Invader Configuration", meta=(AllowPrivateAccess = "true"))
 	float FinalMovementRate = 0.1f;
+
+	// A list of sounds to play in order one per move
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category="GFT|Invader Configuration", meta=(AllowPrivateAccess = "true"))
+	TArray<TObjectPtr<USoundBase>> MoveSounds;
 
 	// The minimum time in seconds that need to pass between attacks
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="GFT|Attack Configuration", meta=(AllowPrivateAccess = "true"))

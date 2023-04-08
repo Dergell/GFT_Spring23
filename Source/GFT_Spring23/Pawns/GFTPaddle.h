@@ -37,7 +37,7 @@ public:
 private:
 	// Handle getting shot by an invader
 	virtual void ProjectileImpact_Implementation() override;
-	
+
 	// Used as RootComponent
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=GFT, meta=(AllowPrivateAccess = "true"))
 	TObjectPtr<USceneComponent> SceneRoot;
@@ -68,6 +68,10 @@ private:
 	// Input configuration for this pawn
 	UPROPERTY(EditAnywhere, Category=GFT, meta=(AllowPrivateAccess = "true"))
 	TSoftObjectPtr<UGFTInputConfig> InputConfig;
+
+	// Explosion sound file
+	UPROPERTY(EditDefaultsOnly, Category=GFT, meta=(AllowPrivateAccess = "true"))
+	TObjectPtr<USoundWave> ExplosionSound;
 
 	// The higher this value, the softer any movements will be
 	UPROPERTY(EditDefaultsOnly, Category=GFT, meta=(AllowPrivateAccess = "true"))
