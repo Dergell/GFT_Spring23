@@ -20,6 +20,12 @@ void AGFTPlayerController::BeginPlay()
 		HudWidget = CreateWidget<UGFTPlayerHud>(this, HudClass);
 		HudWidget->AddToViewport();
 	}
+
+	ULocalPlayer* LocalPlayer = GetLocalPlayer();
+	if (LocalPlayer != nullptr)
+	{
+		LocalPlayer->AspectRatioAxisConstraint = AspectRatio_MaintainYFOV;
+	}
 }
 
 void AGFTPlayerController::EndPlay(const EEndPlayReason::Type EndPlayReason)
