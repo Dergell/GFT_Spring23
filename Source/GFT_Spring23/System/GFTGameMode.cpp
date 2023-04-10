@@ -115,7 +115,10 @@ void AGFTGameMode::StageClear()
 
 	Instance->AdvanceStage();
 	CleanupBalls();
-	SetupInvaders();
+
+	// At this point, this last invader is ending play, but it still in the level. He will be found in SetupInvaders,
+	// which will result in an invalid pointer in InvaderList. To prevent this, we wait with the setup for the next tick. 
+	GetWorldTimerManager().SetTimerForNextTick(this, &AGFTGameMode::SetupInvaders);
 }
 
 void AGFTGameMode::SetupInvaders()

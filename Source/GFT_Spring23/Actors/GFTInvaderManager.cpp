@@ -21,16 +21,12 @@ void AGFTInvaderManager::Initialize(FInvaderConfiguration InvaderConfig)
 	UGameplayStatics::GetAllActorsOfClass(this, AGFTInvader::StaticClass(), Invaders);
 	for (AActor* InvaderActor : Invaders)
 	{
-		if (!IsValid(InvaderActor))
-		{
-			continue;			
-		}
-		
 		AGFTInvader* Invader = Cast<AGFTInvader>(InvaderActor);
 		InvaderList.Add(Invader);
+
 		Invader->OnActorBeginOverlap.AddDynamic(this, &AGFTInvaderManager::OnInvaderBeginOverlap);
 		Invader->OnActorEndOverlap.AddDynamic(this, &AGFTInvaderManager::OnInvaderEndOverlap);
-		Invader->OnDestroyed.AddDynamic(this, &AGFTInvaderManager::OnInvaderDestroyed);
+		Invader->OnEndPlay.AddDynamic(this, &AGFTInvaderManager::OnInvaderEndPlay);
 	}
 
 	// Then setup some basic states
@@ -93,12 +89,12 @@ void AGFTInvaderManager::OnInvaderEndOverlap(AActor* OverlappedActor, AActor* Ot
 	}
 }
 
-void AGFTInvaderManager::OnInvaderDestroyed(AActor* DestroyedActor)
+void AGFTInvaderManager::OnInvaderEndPlay(AActor* Actor, EEndPlayReason::Type EndPlayReason)
 {
 	const float Reduction = (MovementRate - FinalMovementRate) / InvaderList.Num();
 	MovementRate -= Reduction;
 
-	AGFTInvader* Invader = Cast<AGFTInvader>(DestroyedActor);
+	AGFTInvader* Invader = Cast<AGFTInvader>(Actor);
 	InvaderList.Remove(Invader);
 
 	if (InvaderList.IsEmpty())
@@ -120,10 +116,6 @@ void AGFTInvaderManager::PerformMove()
 	for (int Index = InvaderList.Num() - 1; Index >= 0; --Index)
 	{
 		AGFTInvader* Invader = InvaderList[Index];
-		if (!IsValid(Invader))
-		{
-			continue;
-		}
 
 		FVector StartLocation = Invader->GetActorLocation();
 		FVector EndLocation = StartLocation;
@@ -160,7 +152,7 @@ void AGFTInvaderManager::PerformMove()
 			MoveSoundIndex = 0;
 		}
 	}
-	
+
 	// Reset flag after each full cycle
 	bWasReverted = false;
 

@@ -54,9 +54,9 @@ private:
 	UFUNCTION()
 	void OnInvaderEndOverlap(AActor* OverlappedActor, AActor* OtherActor);
 
-	// Callback whenever an invader was destroyed
+	// Callback whenever an invader is removed from the level
 	UFUNCTION()
-	void OnInvaderDestroyed(AActor* DestroyedActor);
+	void OnInvaderEndPlay(AActor* Actor, EEndPlayReason::Type EndPlayReason);
 
 	// Callback for MovementTimer
 	UFUNCTION()
