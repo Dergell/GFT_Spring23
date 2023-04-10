@@ -21,6 +21,7 @@ void AGFTGameMode::PostLogin(APlayerController* NewPlayer)
 	if (Player != nullptr)
 	{
 		Player->OnGameOver.AddDynamic(this, &AGFTGameMode::GameOver);
+		Player->OnLiveLost.AddDynamic(this, &AGFTGameMode::OnLiveLost);
 	}
 }
 
@@ -83,6 +84,11 @@ void AGFTGameMode::WorldBeginPlay()
 	}
 }
 
+void AGFTGameMode::OnLiveLost()
+{
+	CleanupBalls();
+}
+
 void AGFTGameMode::GameOver(AGFTPlayerState* PlayerState)
 {
 	UGFTGameInstance* Instance = GetGameInstance<UGFTGameInstance>();
@@ -108,6 +114,7 @@ void AGFTGameMode::StageClear()
 	}
 
 	Instance->AdvanceStage();
+	CleanupBalls();
 	SetupInvaders();
 }
 
@@ -126,7 +133,7 @@ void AGFTGameMode::SetupInvaders()
 	{
 		Bunker->SetActorScale3D(FVector::OneVector);
 	}
-	
+
 	// Initialize the InvaderManager
 	FInvaderConfiguration InvaderConfig;
 	InvaderConfig.MovementRate = MovementRate;
@@ -164,4 +171,14 @@ void AGFTGameMode::SpawnMothership()
 	// Set a new timer for the next mothership
 	const float Interval = FMath::FRandRange(MinMothershipInterval, MaxMothershipInterval);
 	GetWorldTimerManager().SetTimer(MothershipTimer, this, &AGFTGameMode::SpawnMothership, Interval);
+}
+
+void AGFTGameMode::CleanupBalls()
+{
+	TArray<AActor*> Balls;
+	UGameplayStatics::GetAllActorsOfClass(this, AGFTBall::StaticClass(), Balls);
+	for (AActor* Ball : Balls)
+	{
+		Ball->Destroy();
+	}
 }

@@ -12,6 +12,7 @@ class UGFTPlayerHud;
 class AGFTPaddle;
 class UInputMappingContext;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLiveLost);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGameOver, AGFTPlayerState*, PlayerState);
 
 UCLASS()
@@ -20,6 +21,8 @@ class GFT_SPRING23_API AGFTPlayerController : public APlayerController, public I
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(BlueprintAssignable, Category=GFT)
+	FOnLiveLost OnLiveLost;
 	UPROPERTY(BlueprintAssignable, Category=GFT)
 	FOnGameOver OnGameOver;
 

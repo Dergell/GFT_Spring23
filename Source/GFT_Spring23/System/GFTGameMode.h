@@ -38,6 +38,10 @@ protected:
 	// Callback for OnWorldBeginPlay, will trigger after other BeginPlays 
 	void WorldBeginPlay();
 
+	// Callback when a live was lost
+	UFUNCTION()
+	void OnLiveLost();
+	
 	// Callback when the player lost all lives
 	UFUNCTION()
 	void GameOver(AGFTPlayerState* PlayerState);
@@ -52,6 +56,9 @@ private:
 
 	// Spawn a new mothership
 	void SpawnMothership();
+
+	// Remove all balls from the game
+	void CleanupBalls();
 
 protected:
 	// Blueprint class to use when spawning a Ball
