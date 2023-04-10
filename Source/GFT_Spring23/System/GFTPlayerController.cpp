@@ -85,7 +85,8 @@ void AGFTPlayerController::ScoreUpdate_Implementation(int32 Points)
 
 void AGFTPlayerController::BallLost_Implementation()
 {
-	LoseLive();
+	// Disabled for balancing. Maybe add later as optional hard mode?
+	//LoseLive();
 }
 
 void AGFTPlayerController::PaddleLost_Implementation()
