@@ -41,7 +41,7 @@ protected:
 	// Callback when a live was lost
 	UFUNCTION()
 	void OnLiveLost();
-	
+
 	// Callback when the player lost all lives
 	UFUNCTION()
 	void GameOver(AGFTPlayerState* PlayerState);
@@ -108,5 +108,5 @@ private:
 	FTimerHandle MothershipTimer;
 
 	TObjectPtr<AGFTInvaderManager> InvaderManager;
-	TMultiMap<TSubclassOf<AGFTInvader>, FVector> InvaderCache;
+	TMap<FVector, TSoftClassPtr<AGFTInvader>> InvaderCache;
 };

@@ -80,7 +80,7 @@ void AGFTGameMode::WorldBeginPlay()
 	UGameplayStatics::GetAllActorsOfClass(this, AGFTInvader::StaticClass(), Invaders);
 	for (AActor* Invader : Invaders)
 	{
-		InvaderCache.Add(Invader->GetClass(), Invader->GetActorLocation());
+		InvaderCache.Add(Invader->GetActorLocation(), Invader->GetClass());
 	}
 }
 
@@ -126,7 +126,7 @@ void AGFTGameMode::SetupInvaders()
 	// Spawn the cached invaders. Will be empty on first run.
 	for (auto Invader : InvaderCache)
 	{
-		GetWorld()->SpawnActor<AGFTInvader>(Invader.Key, Invader.Value, FRotator::ZeroRotator);
+		GetWorld()->SpawnActor<AGFTInvader>(Invader.Value.LoadSynchronous(), Invader.Key, FRotator::ZeroRotator);
 	}
 
 	// Reset the size of all bunkers
