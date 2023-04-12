@@ -19,7 +19,6 @@ AGFTBall::AGFTBall()
 	Collision->SetCollisionProfileName(TEXT("BlockAllDynamic"));
 	Collision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	Collision->SetCollisionObjectType(ECC_GameTraceChannel1); // Custom Object Type "Ball"
-	Collision->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Block);
 	Collision->SetUseCCD(true);
 	Collision->SetEnableGravity(false);
 	Collision->SetNotifyRigidBodyCollision(true);

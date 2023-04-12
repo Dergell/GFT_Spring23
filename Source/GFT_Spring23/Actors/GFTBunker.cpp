@@ -13,6 +13,8 @@ AGFTBunker::AGFTBunker()
 	Collision = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision"));
 	Collision->SetCollisionProfileName(TEXT("BlockAllDynamic"));
 	Collision->SetEnableGravity(false);
+	Collision->SetCollisionObjectType(ECC_GameTraceChannel4); // Custom Object Type "Bunker"
+	Collision->SetCollisionResponseToChannel(ECC_GameTraceChannel3, ECR_Overlap); // Overlap "Invader" type
 	RootComponent = Collision;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));

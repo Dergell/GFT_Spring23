@@ -15,6 +15,8 @@ AGFTInvader::AGFTInvader()
 
 	Muzzle = CreateDefaultSubobject<UArrowComponent>(TEXT("Muzzle"));
 	Muzzle->SetupAttachment(Collision);
+
+	Collision->SetCollisionObjectType(ECC_GameTraceChannel3); // Custom Object Type "Invader"
 }
 
 bool AGFTInvader::HasClearShot()
