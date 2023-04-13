@@ -77,4 +77,16 @@ void AGFTBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPri
 	{
 		IGFTImpactable::Execute_BallImpact(OtherActor);
 	}
+
+	// Unfortunately, the parameters only contain the velocity before the hit, so we need to check manually one tick later
+	GetWorldTimerManager().SetTimerForNextTick(this, &AGFTBall::CheckVelocity);
+}
+
+void AGFTBall::CheckVelocity()
+{
+	// If the ball gets stuck moving purely horizontally, we increase vertical velocity to the minimum to prevent death from boredom
+	if (FMath::IsNearlyZero(Projectile->Velocity.Z, MinVerticalVelocity - 0.1f))
+	{
+		Projectile->Velocity.Z = FMath::Sign(Projectile->Velocity.Z) * MinVerticalVelocity;
+	}
 }
