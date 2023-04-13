@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Brick Invaders - Copyright (C) 2023 Tony Schmich
 
 
 #include "GFTInvader.h"
@@ -15,6 +15,8 @@ AGFTInvader::AGFTInvader()
 
 	Muzzle = CreateDefaultSubobject<UArrowComponent>(TEXT("Muzzle"));
 	Muzzle->SetupAttachment(Collision);
+
+	Collision->SetCollisionObjectType(ECC_GameTraceChannel3); // Custom Object Type "Invader"
 }
 
 bool AGFTInvader::HasClearShot()

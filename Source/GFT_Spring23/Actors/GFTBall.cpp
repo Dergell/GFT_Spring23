@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Brick Invaders - Copyright (C) 2023 Tony Schmich
 
 
 #include "GFTBall.h"
@@ -19,7 +19,6 @@ AGFTBall::AGFTBall()
 	Collision->SetCollisionProfileName(TEXT("BlockAllDynamic"));
 	Collision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	Collision->SetCollisionObjectType(ECC_GameTraceChannel1); // Custom Object Type "Ball"
-	Collision->SetCollisionResponseToChannel(ECC_GameTraceChannel1, ECR_Block);
 	Collision->SetUseCCD(true);
 	Collision->SetEnableGravity(false);
 	Collision->SetNotifyRigidBodyCollision(true);
@@ -77,5 +76,17 @@ void AGFTBall::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPri
 	if (OtherActor != nullptr && OtherActor->Implements<UGFTImpactable>())
 	{
 		IGFTImpactable::Execute_BallImpact(OtherActor);
+	}
+
+	// Unfortunately, the parameters only contain the velocity before the hit, so we need to check manually one tick later
+	GetWorldTimerManager().SetTimerForNextTick(this, &AGFTBall::CheckVelocity);
+}
+
+void AGFTBall::CheckVelocity()
+{
+	// If the ball gets stuck moving purely horizontally, we increase vertical velocity to the minimum to prevent death from boredom
+	if (FMath::IsNearlyZero(Projectile->Velocity.Z, MinVerticalVelocity - 0.1f))
+	{
+		Projectile->Velocity.Z = FMath::Sign(Projectile->Velocity.Z) * MinVerticalVelocity;
 	}
 }

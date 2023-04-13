@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Brick Invaders - Copyright (C) 2023 Tony Schmich
 
 
 #include "GFTProjectile.h"
@@ -13,8 +13,9 @@ AGFTProjectile::AGFTProjectile()
 	PrimaryActorTick.bCanEverTick = false;
 
 	Collision = CreateDefaultSubobject<USphereComponent>(TEXT("Collision"));
-	Collision->SetCollisionProfileName(TEXT("BlockAllDynamic"));
+	Collision->SetCollisionProfileName(TEXT("OverlapAllDynamic"));
 	Collision->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	Collision->SetCollisionObjectType(ECC_GameTraceChannel2); // Custom Object Type "Projectile"
 	Collision->SetUseCCD(true);
 	Collision->SetEnableGravity(false);
 	Collision->SetNotifyRigidBodyCollision(true);
@@ -41,7 +42,7 @@ void AGFTProjectile::BeginPlay()
 	Super::BeginPlay();
 
 	OnActorEndOverlap.AddDynamic(this, &AGFTProjectile::OnEndOverlap);
-	Collision->OnComponentHit.AddDynamic(this, &AGFTProjectile::OnHit);
+	Collision->OnComponentBeginOverlap.AddDynamic(this, &AGFTProjectile::OnBeginOverlap);
 }
 
 void AGFTProjectile::OnEndOverlap(AActor* OverlappedActor, AActor* OtherActor)
@@ -52,12 +53,11 @@ void AGFTProjectile::OnEndOverlap(AActor* OverlappedActor, AActor* OtherActor)
 	}
 }
 
-void AGFTProjectile::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void AGFTProjectile::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	Destroy();
-
 	if (OtherActor != nullptr && OtherActor->Implements<UGFTImpactable>())
 	{
 		IGFTImpactable::Execute_ProjectileImpact(OtherActor);
+		Destroy();
 	}
 }

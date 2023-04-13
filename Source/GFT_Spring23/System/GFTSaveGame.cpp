@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Brick Invaders - Copyright (C) 2023 Tony Schmich
 
 
 #include "GFTSaveGame.h"

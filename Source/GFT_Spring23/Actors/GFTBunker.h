@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Brick Invaders - Copyright (C) 2023 Tony Schmich
 
 #pragma once
 
@@ -18,7 +18,10 @@ public:
 	AGFTBunker();
 
 protected:
-	virtual void HandleHit();
+	virtual void BeginPlay() override;
+
+	UFUNCTION()
+	void OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 private:
 	// React to a ball impact
@@ -26,6 +29,9 @@ private:
 
 	// React to a projectile impact
 	virtual void ProjectileImpact_Implementation() override;
+
+	// Will reduce the size of he bunker by the DamageScalar
+	virtual void HandleHit();
 
 	// Box used as RootComponent and for collision
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=GFT, meta=(AllowPrivateAccess = "true"))

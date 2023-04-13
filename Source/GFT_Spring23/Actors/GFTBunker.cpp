@@ -1,8 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Brick Invaders - Copyright (C) 2023 Tony Schmich
 
 
 #include "GFTBunker.h"
 
+#include "GFTInvader.h"
 #include "Components/BoxComponent.h"
 
 AGFTBunker::AGFTBunker()
@@ -13,6 +14,8 @@ AGFTBunker::AGFTBunker()
 	Collision = CreateDefaultSubobject<UBoxComponent>(TEXT("Collision"));
 	Collision->SetCollisionProfileName(TEXT("BlockAllDynamic"));
 	Collision->SetEnableGravity(false);
+	Collision->SetCollisionObjectType(ECC_GameTraceChannel4); // Custom Object Type "Bunker"
+	Collision->SetCollisionResponseToChannel(ECC_GameTraceChannel3, ECR_Overlap); // Overlap "Invader" type
 	RootComponent = Collision;
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
@@ -21,11 +24,18 @@ AGFTBunker::AGFTBunker()
 	Mesh->SetGenerateOverlapEvents(false);
 }
 
-void AGFTBunker::HandleHit()
+void AGFTBunker::BeginPlay()
 {
-	if (GetActorScale3D().GetMin() >= 0)
+	Super::BeginPlay();
+
+	Collision->OnComponentBeginOverlap.AddDynamic(this, &AGFTBunker::OnBeginOverlap);
+}
+
+void AGFTBunker::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor->IsA(AGFTInvader::StaticClass()))
 	{
-		SetActorScale3D(GetActorScale3D() - DamageScalar);
+		SetActorScale3D(FVector::ZeroVector);
 	}
 }
 
@@ -37,4 +47,12 @@ void AGFTBunker::BallImpact_Implementation()
 void AGFTBunker::ProjectileImpact_Implementation()
 {
 	HandleHit();
+}
+
+void AGFTBunker::HandleHit()
+{
+	if (GetActorScale3D().GetMin() >= DamageScalar)
+	{
+		SetActorScale3D(GetActorScale3D() - DamageScalar);
+	}
 }

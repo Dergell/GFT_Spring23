@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Brick Invaders - Copyright (C) 2023 Tony Schmich
 
 
 #include "GFTInvaderManager.h"
@@ -132,7 +132,10 @@ void AGFTInvaderManager::PerformMove()
 
 		// Sweeptest for the ball, so we don't just move over and block it without a hit
 		FCollisionShape Shape = FCollisionShape::MakeBox(Invader->GetComponentsBoundingBox().GetExtent());
-		const bool Hit = GetWorld()->SweepTestByChannel(StartLocation, EndLocation, Invader->GetActorQuat(), ECC_GameTraceChannel1, Shape);
+		FCollisionResponseParams Response;
+		Response.CollisionResponse.SetAllChannels(ECR_Ignore);
+		Response.CollisionResponse.SetResponse(ECC_GameTraceChannel1, ECR_Block);
+		const bool Hit = GetWorld()->SweepTestByChannel(StartLocation, EndLocation, Invader->GetActorQuat(), ECC_GameTraceChannel1, Shape, FCollisionQueryParams::DefaultQueryParam, Response);
 		if (Hit)
 		{
 			IGFTImpactable::Execute_BallImpact(Invader);
