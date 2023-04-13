@@ -3,6 +3,7 @@
 
 #include "GFTBunker.h"
 
+#include "GFTInvader.h"
 #include "Components/BoxComponent.h"
 
 AGFTBunker::AGFTBunker()
@@ -23,11 +24,18 @@ AGFTBunker::AGFTBunker()
 	Mesh->SetGenerateOverlapEvents(false);
 }
 
-void AGFTBunker::HandleHit()
+void AGFTBunker::BeginPlay()
 {
-	if (GetActorScale3D().GetMin() >= 0)
+	Super::BeginPlay();
+
+	Collision->OnComponentBeginOverlap.AddDynamic(this, &AGFTBunker::OnBeginOverlap);
+}
+
+void AGFTBunker::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor->IsA(AGFTInvader::StaticClass()))
 	{
-		SetActorScale3D(GetActorScale3D() - DamageScalar);
+		SetActorScale3D(FVector::ZeroVector);
 	}
 }
 
@@ -39,4 +47,12 @@ void AGFTBunker::BallImpact_Implementation()
 void AGFTBunker::ProjectileImpact_Implementation()
 {
 	HandleHit();
+}
+
+void AGFTBunker::HandleHit()
+{
+	if (GetActorScale3D().GetMin() >= DamageScalar)
+	{
+		SetActorScale3D(GetActorScale3D() - DamageScalar);
+	}
 }
