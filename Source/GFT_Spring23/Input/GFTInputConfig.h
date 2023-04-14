@@ -19,8 +19,7 @@ class GFT_SPRING23_API UGFTInputConfig : public UDataAsset
 
 public:
 	const UInputMappingContext* GetInputMapping() const;
-	const UInputAction* GetInputMove() const;
-	const UInputAction* GetInputFire() const;
+	const UInputAction* GetInputAction(FName ActionName) const;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

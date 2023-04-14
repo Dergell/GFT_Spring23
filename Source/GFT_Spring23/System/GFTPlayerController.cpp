@@ -50,7 +50,13 @@ void AGFTPlayerController::OnPossess(APawn* aPawn)
 	}
 
 	Paddle = PaddlePawn;
-	BindInputActions();
+
+	const UGFTInputConfig* InputConfig = Paddle->GetInputConfig();
+	if (InputConfig != nullptr)
+	{
+		AddInputMapping(InputConfig->GetInputMapping());
+		BindInputActions();
+	}
 }
 
 void AGFTPlayerController::OnUnPossess()
@@ -132,9 +138,8 @@ void AGFTPlayerController::BindInputActions()
 	const UGFTInputConfig* InputConfig = Paddle->GetInputConfig();
 	if (InputConfig != nullptr)
 	{
-		AddInputMapping(InputConfig->GetInputMapping());
-		Input->BindAction(InputConfig->GetInputMove(), ETriggerEvent::Triggered, Paddle.Get(), &AGFTPaddle::MovePaddle);
-		Input->BindAction(InputConfig->GetInputFire(), ETriggerEvent::Triggered, Paddle.Get(), &AGFTPaddle::FireBall);
+		Input->BindAction(InputConfig->GetInputAction(TEXT("Move")), ETriggerEvent::Triggered, Paddle.Get(), &AGFTPaddle::MovePaddle);
+		Input->BindAction(InputConfig->GetInputAction(TEXT("Fire")), ETriggerEvent::Triggered, Paddle.Get(), &AGFTPaddle::FireBall);
 	}
 }
 
