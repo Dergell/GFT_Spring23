@@ -5,6 +5,7 @@
 
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "GFTGameInstance.h"
 #include "GFTPlayerState.h"
 #include "Blueprint/UserWidget.h"
 #include "GFT_Spring23/Input/GFTInputConfig.h"
@@ -25,6 +26,13 @@ void AGFTPlayerController::BeginPlay()
 	if (LocalPlayer != nullptr)
 	{
 		LocalPlayer->AspectRatioAxisConstraint = AspectRatio_MaintainYFOV;
+	}
+
+	UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(InputComponent);
+	const UGFTInputConfig* InputConfig = Paddle->GetInputConfig();
+	if (Input != nullptr && InputConfig != nullptr)
+	{
+		Input->BindAction(InputConfig->GetInputAction(TEXT("Pause")), ETriggerEvent::Triggered, this, &AGFTPlayerController::TriggerPause);
 	}
 }
 
@@ -182,4 +190,17 @@ void AGFTPlayerController::RemoveInputMapping(const UInputMappingContext* InputM
 	{
 		InputSystem->RemoveMappingContext(InputMapping);
 	}
+}
+
+void AGFTPlayerController::TriggerPause()
+{
+	Pause();
+
+	UGFTGameInstance* Instance = GetGameInstance<UGFTGameInstance>();
+	if (Instance == nullptr)
+	{
+		return;
+	}
+
+	Instance->LoadMenu();
 }
