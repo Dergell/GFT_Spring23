@@ -135,6 +135,7 @@ void AGFTGameMode::SetupInvaders()
 	for (AActor* Bunker : Bunkers)
 	{
 		Bunker->SetActorScale3D(FVector::OneVector);
+		Bunker->SetActorEnableCollision(true);
 	}
 
 	// Initialize the InvaderManager
