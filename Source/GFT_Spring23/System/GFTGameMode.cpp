@@ -57,6 +57,11 @@ TSubclassOf<AGFTBall> AGFTGameMode::GetBallClass() const
 	return BallClass;
 }
 
+int32 AGFTGameMode::GetStage() const
+{
+	return Stage;
+}
+
 void AGFTGameMode::BeginPlay()
 {
 	Super::BeginPlay();
@@ -102,6 +107,7 @@ void AGFTGameMode::GameOver(AGFTPlayerState* PlayerState)
 		Instance->UpdateHighscore(PlayerState->GetScore());
 	}
 
+	Stage = 1;
 	Instance->LoadMenuLevel();
 }
 
@@ -113,7 +119,7 @@ void AGFTGameMode::StageClear()
 		return;
 	}
 
-	Instance->AdvanceStage();
+	Stage++;
 	CleanupBalls();
 
 	// At this point, this last invader is ending play, but it still in the level. He will be found in SetupInvaders,
@@ -135,6 +141,7 @@ void AGFTGameMode::SetupInvaders()
 	for (AActor* Bunker : Bunkers)
 	{
 		Bunker->SetActorScale3D(FVector::OneVector);
+		Bunker->SetActorEnableCollision(true);
 	}
 
 	// Initialize the InvaderManager

@@ -18,6 +18,7 @@ This is my submission for the Unreal Engine Programming Challenge at Games Job F
 ## How to play
 * <kbd>Mouse</kbd> - Move the paddle left or right
 * <kbd>Left Click</kbd> - Launch a new ball if you lost the last one
+* <kbd>ESC</kbd> - Pause the game and show the main menu
 
 ## Thanks to
 The corona skybox was made by Ulukai (jonathan.denil@gmail.com), licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported License.

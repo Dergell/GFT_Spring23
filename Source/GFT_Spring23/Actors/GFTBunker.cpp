@@ -36,6 +36,7 @@ void AGFTBunker::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor
 	if (OtherActor->IsA(AGFTInvader::StaticClass()))
 	{
 		SetActorScale3D(FVector::ZeroVector);
+		SetActorEnableCollision(false);
 	}
 }
 
@@ -51,8 +52,13 @@ void AGFTBunker::ProjectileImpact_Implementation()
 
 void AGFTBunker::HandleHit()
 {
-	if (GetActorScale3D().GetMin() >= DamageScalar)
+	if (GetActorScale3D().GetMin() > DamageScalar)
 	{
 		SetActorScale3D(GetActorScale3D() - DamageScalar);
+	}
+	else
+	{
+		SetActorScale3D(FVector::ZeroVector);
+		SetActorEnableCollision(false);
 	}
 }

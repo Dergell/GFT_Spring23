@@ -69,16 +69,6 @@ void UGFTGameInstance::LoadMenuLevel()
 	}
 }
 
-int32 UGFTGameInstance::GetStage() const
-{
-	return Stage;
-}
-
-void UGFTGameInstance::AdvanceStage()
-{
-	Stage += 1;
-}
-
 void UGFTGameInstance::UpdateHighscore(float InHighscore)
 {
 	if (SaveGame != nullptr && SaveGame->GetHighscore() <= InHighscore)
@@ -95,6 +85,11 @@ void UGFTGameInstance::Quit()
 
 void UGFTGameInstance::Play()
 {
+	if (MainMenu != nullptr)
+	{
+		MainMenu->Shutdown();
+	}
+
 	const FString LevelPath = MainLevel.GetLongPackageName();
 	if (LevelPath.IsEmpty())
 	{
@@ -103,13 +98,8 @@ void UGFTGameInstance::Play()
 	}
 
 	UWorld* World = GetWorld();
-	if (World != nullptr)
+	if (World != nullptr && MainLevel != World)
 	{
 		World->ServerTravel(LevelPath);
-	}
-
-	if (MainMenu != nullptr)
-	{
-		MainMenu->Shutdown();
 	}
 }

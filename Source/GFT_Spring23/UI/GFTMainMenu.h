@@ -48,6 +48,10 @@ protected:
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UButton> ButtonPlay;
 
+	// Directly binds to the blueprint button ButtonPlay
+	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+	TObjectPtr<UTextBlock> TextPlay;
+
 	// Directly binds to the blueprint button ButtonQuit
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
 	TObjectPtr<UButton> ButtonQuit;

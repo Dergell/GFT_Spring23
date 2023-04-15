@@ -31,12 +31,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void LoadMenuLevel();
 
-	// Get current Stage
-	int32 GetStage() const;
-
-	// Advance Stage
-	void AdvanceStage();
-
 	// Update the Highscore in the SaveGame
 	void UpdateHighscore(float InHighscore);
 
@@ -67,8 +61,4 @@ private:
 	// SaveGame object that holds the highscore
 	UPROPERTY()
 	TObjectPtr<UGFTSaveGame> SaveGame;
-
-	// The stage increases everytime the level is cleared
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=GFT, meta=(AllowPrivateAccess = "true"))
-	int32 Stage = 1;
 };

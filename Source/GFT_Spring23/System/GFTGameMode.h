@@ -20,8 +20,9 @@ class GFT_SPRING23_API AGFTGameMode : public AGameModeBase
 public:
 	virtual void PostLogin(APlayerController* NewPlayer) override;
 
-	// Getter
+	// Accessors
 	TSubclassOf<AGFTBall> GetBallClass() const;
+	int32 GetStage() const;
 
 	// Returns true if ActiveBalls is smaller than MaxBalls
 	bool IsBallReady();
@@ -61,6 +62,10 @@ private:
 	void CleanupBalls();
 
 protected:
+	// The stage increases everytime the level is cleared
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=GFT)
+	int32 Stage = 1;
+
 	// Blueprint class to use when spawning a Ball
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="GFT|Ball Configuration")
 	TSubclassOf<AGFTBall> BallClass;

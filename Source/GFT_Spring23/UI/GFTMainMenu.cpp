@@ -51,6 +51,11 @@ void UGFTMainMenu::Setup()
 
 		PlayerController->SetInputMode(InputModeData);
 		PlayerController->bShowMouseCursor = true;
+
+		if (PlayerController->IsPaused())
+		{
+			TextPlay->SetText(FText::FromString(TEXT("Resume")));
+		}
 	}
 }
 
@@ -63,6 +68,7 @@ void UGFTMainMenu::Shutdown()
 	{
 		PlayerController->SetInputMode(FInputModeGameOnly());
 		PlayerController->bShowMouseCursor = false;
+		PlayerController->SetPause(false);
 	}
 }
 

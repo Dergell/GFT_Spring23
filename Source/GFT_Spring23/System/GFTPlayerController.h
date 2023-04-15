@@ -41,11 +41,13 @@ protected:
 private:
 	// Process losing a live
 	void LoseLive();
-	
+
 	// Input operations
 	void BindInputActions();
 	void AddInputMapping(const UInputMappingContext* InputMapping);
 	void RemoveInputMapping(const UInputMappingContext* InputMapping);
+
+	void TriggerPause();
 
 	// Blueprints used as player hud
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=GFT, meta=(AllowPrivateAccess = "true"))
