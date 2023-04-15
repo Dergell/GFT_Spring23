@@ -3,9 +3,8 @@
 
 #include "GFTInvaderManager.h"
 
-#include "GFTBall.h"
 #include "GFTInvader.h"
-#include "GFT_Spring23/System/GFTGameInstance.h"
+#include "GFT_Spring23/System/GFTGameMode.h"
 #include "Kismet/GameplayStatics.h"
 
 AGFTInvaderManager::AGFTInvaderManager()
@@ -40,14 +39,18 @@ void AGFTInvaderManager::Initialize(FInvaderConfiguration InvaderConfig)
 	MovementVector = FVector(100, 0, 0);
 
 	// Now move the invaders down according to the current stage
-	int32 Stage = GetGameInstance<UGFTGameInstance>()->GetStage();
-	while (Stage > 1 && bShouldMoveDown)
+	const AGFTGameMode* GameMode = Cast<AGFTGameMode>(UGameplayStatics::GetGameMode(this));
+	if (GameMode != nullptr)
 	{
-		for (AGFTInvader* Invader : InvaderList)
+		int32 Stage = GameMode->GetStage();
+		while (Stage > 1 && bShouldMoveDown)
 		{
-			Invader->SetActorLocation(Invader->GetActorLocation() + FVector(0, 0, -100));
+			for (AGFTInvader* Invader : InvaderList)
+			{
+				Invader->SetActorLocation(Invader->GetActorLocation() + FVector(0, 0, -100));
+			}
+			Stage--;
 		}
-		Stage--;
 	}
 
 	// Lastly, activate the timers

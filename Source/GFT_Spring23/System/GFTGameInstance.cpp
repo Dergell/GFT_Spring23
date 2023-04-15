@@ -69,16 +69,6 @@ void UGFTGameInstance::LoadMenuLevel()
 	}
 }
 
-int32 UGFTGameInstance::GetStage() const
-{
-	return Stage;
-}
-
-void UGFTGameInstance::AdvanceStage()
-{
-	Stage += 1;
-}
-
 void UGFTGameInstance::UpdateHighscore(float InHighscore)
 {
 	if (SaveGame != nullptr && SaveGame->GetHighscore() <= InHighscore)
